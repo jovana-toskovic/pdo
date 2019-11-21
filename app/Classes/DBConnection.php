@@ -50,13 +50,23 @@ class DBConnection
         return $this->conn;
     }
 
-    public function getQuery($sql, $class)
+    public function getQuery($sql, $class, $array=null)
     {
-        $stmt = $this->getConnection()->query($sql);
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute($array);
         $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
         return $stmt;
     }
 
+    public function runQuery($sql, $array)
+    {
+        try {
+            $stmt = $this->getConnection()->prepare($sql);
+            $stmt->execute($array);
+        } catch(PDOException $e) {
+        	echo $e->getMessage();
+        }
+        return $stmt;
 
-
+    }
 }
