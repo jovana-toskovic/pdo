@@ -71,36 +71,47 @@ class DBConnection
 
     //prepare query
 
-    public function prepareQuery($sql, $class, $array, $mode)
+    public function prepareQuery($sql, $array=null)
     {
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($array);
-        $this->fetchMode($mode, $class, $stmt);
         return $stmt;
+        
     }
 
     //get methods
 
-    public function get($sql, $mode, $class=null, $array=null)
+    public function getAll($table, $fields, $conditions, $mode, $class=null)
     {
-       return $this->prepareQuery($sql, $class, $array, $mode)->fetch();
-
+        $queryCondition = "";
+        $queryArray = [];
+        foreach($conditions as $condition=>$value){
+            $queryCondition = "$condition = ?";
+            array_push($queryArray, $value);
+            echo "<br>";
+        }
+        var_dump($queryCondition);
+        $tableFields = implode(', ', $fields);
+        $sql = "SELECT $tableFields FROM $table WHERE $queryCondition;";
+        $stmt = $this->prepareQuery($sql, $queryArray);
+        $this->fetchMode($mode, $class, $stmt);
+        return $stmt->fetch();
     }
 
-    public function getAll($sql, $mode, $class=null, $array=null)
+    public function get($table, $mode, $class=null)
     {
-       return $this->prepareQuery($sql, $class, $array, $mode)->fetchAll();
+        $sql = "SELECT * FROM $table;";
+        $stmt = $this->prepareQuery($sql);
+        $this->fetchMode($mode, $class, $stmt);
+        return $stmt->fetchAll();
     }
-
 
 
 
 
     public function runQuery($sql, $array)
     {
-        $stmt = $this->getConnection()->prepare($sql);
-        $stmt->execute($array);
-        return $stmt;
+        $this->prepareQuery($sql, $array);
     }
 
 }
