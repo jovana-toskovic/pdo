@@ -16,7 +16,7 @@ $instance = DBConnection::getInstance();
 // $newStmt = $instance->runQuery('INSERT INTO posts (title, body, author, published, created_at) VALUES (?, ?, ?, ?, NOW());', array('New title', 'This is new post by Anna', 'Anna', true));
 
 
-$objectById = $instance->getAll('posts', ['id', 'body', 'title', 'author'], ['id'=>1], "CLASS", Guestbook::class);
+$objectById = $instance->getAll('posts', ['id', 'body', 'title', 'author'], [['id'=>1]], "CLASS", Guestbook::class);
 print_r($objectById);
 
 

@@ -83,12 +83,15 @@ class DBConnection
 
     public function getAll($table, $fields, $conditions, $mode, $class=null)
     {
+        var_dump($conditions);
         $queryCondition = "";
         $queryArray = [];
-        foreach($conditions as $condition=>$value){
-            $queryCondition = "$condition = ?";
-            array_push($queryArray, $value);
-            echo "<br>";
+        foreach($conditions as $condition){
+            foreach($condition as $property=>$value){
+                $queryCondition = "$property = ?";
+                array_push($queryArray, $value);
+                echo "<br>";
+            } 
         }
         var_dump($queryCondition);
         $tableFields = implode(', ', $fields);
