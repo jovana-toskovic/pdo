@@ -25,16 +25,16 @@ class DBConnection
         }
     }
 
+    //make clone private
     private function __clone()
     {
-
     }
-
+    //make clone wakeup
     private function __wakeup()
     {
-
     }
 
+    //get only one instance
     public static function getInstance()
     {
         if(!self::$instance)
@@ -50,23 +50,57 @@ class DBConnection
         return $this->conn;
     }
 
-    public function getQuery($sql, $class, $array=null)
+    //set fetch mode
+
+    public function fetchMode($mode, $class, $stmt)
+    {
+        switch (strtoupper($mode)) {
+            case "CLASS":
+                return $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
+            case "ASSOC":
+                return $stmt->setFetchMode(PDO::FETCH_ASSOC);
+            case "BOTH":
+                return $stmt->setFetchMode(PDO::FETCH_BOTH);
+            case "NUM":
+                return $stmt->setFetchMode(PDO::FETCH_NUM);
+                
+            default:
+                return $stmt->setFetchMode(PDO::FETCH_ASSOC);
+        }
+    }
+
+    //prepare query
+
+    public function prepareQuery($sql, $class, $array, $mode)
     {
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($array);
-        $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
+        $this->fetchMode($mode, $class, $stmt);
         return $stmt;
     }
+
+    //get methods
+
+    public function get($sql, $mode, $class=null, $array=null)
+    {
+       return $this->prepareQuery($sql, $class, $array, $mode)->fetch();
+
+    }
+
+    public function getAll($sql, $mode, $class=null, $array=null)
+    {
+       return $this->prepareQuery($sql, $class, $array, $mode)->fetchAll();
+    }
+
+
+
+
 
     public function runQuery($sql, $array)
     {
-        try {
-            $stmt = $this->getConnection()->prepare($sql);
-            $stmt->execute($array);
-        } catch(PDOException $e) {
-        	echo $e->getMessage();
-        }
+        $stmt = $this->getConnection()->prepare($sql);
+        $stmt->execute($array);
         return $stmt;
-
     }
+
 }
