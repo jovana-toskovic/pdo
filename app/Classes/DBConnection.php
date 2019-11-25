@@ -86,19 +86,21 @@ class DBConnection
         var_dump($conditions);
         $queryCondition = "";
         $queryArray = [];
-        foreach($conditions as $condition){
-            foreach($condition as $property=>$value){
-                $queryCondition = "$property = ?";
+        foreach($conditions as $property=>$value){
+            if($property === 'logicalOperator'){
+                $queryCondition = $queryCondition . " $value";
+            } else {
+                $queryCondition = $queryCondition . " $property = ?";
                 array_push($queryArray, $value);
-                echo "<br>";
-            } 
+            }
         }
-        var_dump($queryCondition);
+       
         $tableFields = implode(', ', $fields);
         $sql = "SELECT $tableFields FROM $table WHERE $queryCondition;";
+        echo $sql;
         $stmt = $this->prepareQuery($sql, $queryArray);
         $this->fetchMode($mode, $class, $stmt);
-        return $stmt->fetch();
+        return $stmt->fetchAll();
     }
 
     public function get($table, $mode, $class=null)
