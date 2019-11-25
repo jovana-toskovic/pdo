@@ -17,6 +17,7 @@ class DBConnection
     //query
 
     private $table;
+    private $sql;
     private $condition;
     private $values = [];
     private $mode;
@@ -79,7 +80,7 @@ class DBConnection
 
     //prepare query
 
-    public function prepareQuery($sql, $array=null)
+    private function prepareQuery($sql, $array=null)
     {
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($array);
@@ -88,33 +89,79 @@ class DBConnection
     }
 
     //set table
+    // public function table($table)
+    // {
+    //     $this->table = $table;
+    //     return $this;
+    // }
     public function table($table)
     {
-        $this->table = $table;
+        $this->sql .= "FROM $table WHERE ";
         return $this;
     }
+    
     //set condition
+    // public function where($where)
+    // {
+    //     $queryCondition = "";
+    //     $queryArray = [];
+        
+    //     $keys = array_keys($where);
+
+    //     $operator = $where[$keys[1]];
+    //     $queryCondition = $queryCondition . " " . $keys[0] . " " . $operator . " ?";
+ 
+    //     array_push($queryArray, $where[$keys[0]]);
+
+
+    //     $logicalOperator = array_key_exists(2, $keys) ? $where[$keys[2]] : '';
+    //     $queryCondition = $queryCondition . " " . $logicalOperator;
+       
+    //     $this->condition = $this->condition . $queryCondition;
+    //     $this->values = array_merge($this->values, $queryArray);
+    //     return $this;
+    // }
     public function where($where)
     {
-        $queryCondition = "";
-        $queryArray = [];
-        $operator = '';
-        foreach($where as $property=>$value){
-            if ($property === 0){
-                $operator = $value;
-            }
-            if ($property === 1){
-                $queryCondition = $queryCondition . " $value";
-            } 
-            if (is_string($property)) {
-                $queryCondition = $queryCondition . " $property $operator ?";
-                array_push($queryArray, $value);
-            }
-        }
-        $this->condition = $this->condition . $queryCondition;
-        $this->values = array_merge($this->values, $queryArray);
+        $this->sql .= $where[0] . " " . $where[1] . "? ";
+        array_push($this->values, $where[2]);
         return $this;
     }
+    //stringify query parameters
+    public function stringifyArray($array)
+    {
+        return implode(', ', $array);
+    }
+    //logical operators
+    public function and()
+    {
+        $this->sql .= '&& ';
+        return $this;
+    }
+    public function or()
+    {
+        $this->sql .= '|| ';
+        return $this;
+    }
+
+    public function select($parameters = ['*']) {
+        $queryParameters = $this->stringifyArray($parameters);
+        $this->sql = "SELECT $queryParameters";
+        return $this;
+    }
+
+    // public function where($field, $comparator, $value) {
+    //     switch ($comparator) {
+    //         case "<":
+    //             $this->$query .= WHERE $field < $value;
+    //         break;
+    //         case ">":
+    //             $this->comparator .= WHERE $field > $value;
+    //         break;
+    //     }
+    //     return $this;
+    // }
+
     //set fetch mode
     public function fetch($mode, $class=null)
     {
@@ -130,9 +177,9 @@ class DBConnection
 
     public function getAll()
     {
-        $sql = "SELECT * FROM $this->table WHERE $this->condition;";
-        echo $sql;
-        $stmt = $this->prepareQuery($sql, $this->values);
+       
+        echo $this->sql;
+        $stmt = $this->prepareQuery($this->sql, $this->values);
         $this->fetchMode($stmt);
         return $stmt->fetchAll();
     }
