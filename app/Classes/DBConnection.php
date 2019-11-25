@@ -18,7 +18,7 @@ class DBConnection
 
     private $table;
     private $condition;
-    private $values;
+    private $values = [];
     private $mode;
     private $class;
 
@@ -99,23 +99,20 @@ class DBConnection
         $queryCondition = "";
         $queryArray = [];
         $operator = '';
-        foreach($where as $condition){
-            foreach($condition as $property=>$value){
-           
-                if ($property === 'operator'){
-                    $operator = $value;
-                }
-                if ($property === 'logicalOperator'){
-                    $queryCondition = $queryCondition . " $value";
-                } 
-                if ($property !== 'operator' && $property !== 'logicalOperator') {
-                    $queryCondition = $queryCondition . " $property $operator ?";
-                    array_push($queryArray, $value);
-                }
+        foreach($where as $property=>$value){
+            if ($property === 0){
+                $operator = $value;
+            }
+            if ($property === 1){
+                $queryCondition = $queryCondition . " $value";
+            } 
+            if (is_string($property)) {
+                $queryCondition = $queryCondition . " $property $operator ?";
+                array_push($queryArray, $value);
             }
         }
-        $this->condition = $queryCondition;
-        $this->values = $queryArray;
+        $this->condition = $this->condition . $queryCondition;
+        $this->values = array_merge($this->values, $queryArray);
         return $this;
     }
     //set fetch mode
@@ -124,11 +121,12 @@ class DBConnection
         $this->mode = $mode;
         $this->class = $class;
         return $this;
-
     }
 
     //get methods
-    //instance->table("posts")->where( ["id'=>1, "logicalOperator"=>"||",  "author"=>"Anna"])->getAll();
+    //Where upit reba ovako da ti izgleda:
+// ->where(['id'=>9, '=>','&&'])
+// ->where([ 'author', 'LIKE', 'Anna']])
 
     public function getAll()
     {
