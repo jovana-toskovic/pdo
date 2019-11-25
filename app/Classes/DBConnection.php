@@ -14,6 +14,14 @@ class DBConnection
     private $dbPassword = "43>RDaW5";
     private $dbHost = "localhost";
 
+    //query
+
+    private $table;
+    private $condition;
+    private $values;
+    private $mode;
+    private $class;
+
     private function __construct()
     {
         try {
@@ -52,11 +60,11 @@ class DBConnection
 
     //set fetch mode
 
-    public function fetchMode($mode, $class, $stmt)
+    public function fetchMode($stmt)
     {
-        switch (strtoupper($mode)) {
+        switch (strtoupper($this->mode)) {
             case "CLASS":
-                return $stmt->setFetchMode(PDO::FETCH_CLASS, $class);
+                return $stmt->setFetchMode(PDO::FETCH_CLASS, $this->class);
             case "ASSOC":
                 return $stmt->setFetchMode(PDO::FETCH_ASSOC);
             case "BOTH":
@@ -79,27 +87,55 @@ class DBConnection
         
     }
 
-    //get methods
-
-    public function getAll($table, $fields, $conditions, $mode, $class=null)
+    //set table
+    public function table($table)
     {
-        var_dump($conditions);
+        $this->table = $table;
+        return $this;
+    }
+    //set condition
+    public function where($where)
+    {
         $queryCondition = "";
         $queryArray = [];
-        foreach($conditions as $property=>$value){
-            if($property === 'logicalOperator'){
-                $queryCondition = $queryCondition . " $value";
-            } else {
-                $queryCondition = $queryCondition . " $property = ?";
-                array_push($queryArray, $value);
+        $operator = '';
+        foreach($where as $condition){
+            foreach($condition as $property=>$value){
+           
+                if ($property === 'operator'){
+                    $operator = $value;
+                }
+                if ($property === 'logicalOperator'){
+                    $queryCondition = $queryCondition . " $value";
+                } 
+                if ($property !== 'operator' && $property !== 'logicalOperator') {
+                    $queryCondition = $queryCondition . " $property $operator ?";
+                    array_push($queryArray, $value);
+                }
             }
         }
-       
-        $tableFields = implode(', ', $fields);
-        $sql = "SELECT $tableFields FROM $table WHERE $queryCondition;";
+        $this->condition = $queryCondition;
+        $this->values = $queryArray;
+        return $this;
+    }
+    //set fetch mode
+    public function fetch($mode, $class=null)
+    {
+        $this->mode = $mode;
+        $this->class = $class;
+        return $this;
+
+    }
+
+    //get methods
+    //instance->table("posts")->where( ["id'=>1, "logicalOperator"=>"||",  "author"=>"Anna"])->getAll();
+
+    public function getAll()
+    {
+        $sql = "SELECT * FROM $this->table WHERE $this->condition;";
         echo $sql;
-        $stmt = $this->prepareQuery($sql, $queryArray);
-        $this->fetchMode($mode, $class, $stmt);
+        $stmt = $this->prepareQuery($sql, $this->values);
+        $this->fetchMode($stmt);
         return $stmt->fetchAll();
     }
 
@@ -107,16 +143,19 @@ class DBConnection
     {
         $sql = "SELECT * FROM $table;";
         $stmt = $this->prepareQuery($sql);
-        $this->fetchMode($mode, $class, $stmt);
+        $this->fetchMode($stmt);
         return $stmt->fetchAll();
     }
-
-
-
 
     public function runQuery($sql, $array)
     {
         $this->prepareQuery($sql, $array);
     }
 
+    public function post($table, $fields, $values)
+    {
+        $tableFields = implode(', ', $fields);
+        $sql = "INSERT INTO $table ($fields) VALUES ($values);";
+
+    }
 }
