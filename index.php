@@ -30,14 +30,26 @@ $instance = DBConnection::getInstance();
 
 
 $objects = $instance
-->select()
 ->table('posts')
+->select()
 ->where(['id', '>', 9])
-->and()
-->where(['author', 'LIKE', 'Anna'])
+->or()
+->where(['author', 'LIKE', 'Carl'])
 ->fetch("CLASS", Guestbook::class)
 ->getAll();
 
 foreach($objects as $object){
     echo "<p>ID: $object->id and AUTHOR: $object->author</p>";
 }
+
+
+// $objects1 = $instance
+// ->table('posts')
+// ->insert(['author', 'title', 'body'], ['Karlie', 'This is new title', 'This is post body'])
+// ->post();
+
+$objects2 = $instance
+->table('posts')
+->update(['author', 'title', 'body'], ['Carl', 'This is Carl.', 'This is post by Carl'])
+->where(['id', '=', 11])
+->post();

@@ -15,7 +15,6 @@ class DBConnection
     private $dbHost = "localhost";
 
     //query
-
     private $table;
     private $sql;
     private $condition;
@@ -44,7 +43,7 @@ class DBConnection
     }
 
     //get only one instance
-    public static function getInstance()
+    public static function getInstance(): object
     {
         if(!self::$instance)
         {
@@ -54,14 +53,14 @@ class DBConnection
         return self::$instance;
     }
 
-    public function getConnection()
+    public function getConnection(): object
     {
         return $this->conn;
     }
 
     //set fetch mode
 
-    public function fetchMode($stmt)
+    public function fetchMode(object $stmt)
     {
         switch (strtoupper($this->mode)) {
             case "CLASS":
@@ -79,13 +78,11 @@ class DBConnection
     }
 
     //prepare query
-
-    private function prepareQuery($sql, $array=null)
+    private function prepareQuery(string $sql, array $array=null): object
     {
         $stmt = $this->getConnection()->prepare($sql);
         $stmt->execute($array);
         return $stmt;
-        
     }
 
     //set table
@@ -94,9 +91,9 @@ class DBConnection
     //     $this->table = $table;
     //     return $this;
     // }
-    public function table($table)
+    public function table(string $table): object
     {
-        $this->sql .= "FROM $table WHERE ";
+        $this->table = $table;
         return $this;
     }
     
@@ -121,86 +118,104 @@ class DBConnection
     //     $this->values = array_merge($this->values, $queryArray);
     //     return $this;
     // }
-    public function where($where)
+
+    //set condition
+    public function where(array $where): object
     {
         $this->sql .= $where[0] . " " . $where[1] . "? ";
         array_push($this->values, $where[2]);
+        echo $this->sql;
         return $this;
     }
+
     //stringify query parameters
-    public function stringifyArray($array)
+    public function stringifyArray(array $array, string $bindString = ', '): string
     {
-        return implode(', ', $array);
+        return implode($bindString, $array);
     }
+
     //logical operators
-    public function and()
+    public function and(): object
     {
         $this->sql .= '&& ';
         return $this;
     }
-    public function or()
+    public function or(): object
     {
         $this->sql .= '|| ';
         return $this;
     }
 
-    public function select($parameters = ['*']) {
+    // select 
+    public function select(array $parameters = ['*']): object 
+    {
         $queryParameters = $this->stringifyArray($parameters);
-        $this->sql = "SELECT $queryParameters";
+        $this->sql = "SELECT $queryParameters FROM $this->table WHERE ";
         return $this;
     }
 
-    // public function where($field, $comparator, $value) {
-    //     switch ($comparator) {
-    //         case "<":
-    //             $this->$query .= WHERE $field < $value;
-    //         break;
-    //         case ">":
-    //             $this->comparator .= WHERE $field > $value;
-    //         break;
-    //     }
-    //     return $this;
-    // }
+    //insert
+    public function insert(array $columns = [], array $values = []): object 
+    {
+        $queryColumns = $this->stringifyArray($columns);
+        $queryValues = $this->stringifyArray(array_fill(0, count($columns), '?'));
+        $this->values = array_merge($this->values, $values);
+        $this->sql = "INSERT INTO $this->table ($queryColumns) VALUES ($queryValues);";
+        echo $this->sql;
+        return $this;
+    }
+
+    //update
+    public function update(array $columns = [], array $values = []): object
+    {
+        $queryColumns = $this->stringifyArray($columns, ' = ?, ') . " = ?";
+        $this->values = array_merge($this->values, $values);
+        $this->sql = "UPDATE $this->table SET $queryColumns WHERE ";
+        return $this;
+    }
 
     //set fetch mode
-    public function fetch($mode, $class=null)
+    public function fetch(string $mode, string $class=null): object
     {
         $this->mode = $mode;
         $this->class = $class;
         return $this;
     }
 
-    //get methods
-    //Where upit reba ovako da ti izgleda:
-// ->where(['id'=>9, '=>','&&'])
-// ->where([ 'author', 'LIKE', 'Anna']])
-
-    public function getAll()
+    //get all
+    public function getAll(): array
     {
-       
-        echo $this->sql;
         $stmt = $this->prepareQuery($this->sql, $this->values);
+        $this->values = [];
+        echo $this->sql;
+        $this->sql = "";
+        $this->table = "";
         $this->fetchMode($stmt);
         return $stmt->fetchAll();
     }
 
-    public function get($table, $mode, $class=null)
+    // public function get($table, $mode, $class=null)
+    // {
+    //     $sql = "SELECT * FROM $table;";
+    //     $stmt = $this->prepareQuery($sql);
+    //     $this->fetchMode($stmt);
+    //     return $stmt->fetchAll();
+    // }
+
+    // public function runQuery($sql, $array)
+    // {
+    //     $this->prepareQuery($sql, $array);
+    // }
+
+    public function post()
     {
-        $sql = "SELECT * FROM $table;";
-        $stmt = $this->prepareQuery($sql);
-        $this->fetchMode($stmt);
-        return $stmt->fetchAll();
+        echo $this->sql;
+        print_r($this->values);
+        $stmt = $this->prepareQuery($this->sql, $this->values);
+        $this->values = [];
+        $this->sql = "";
+        $this->table = "";
     }
 
-    public function runQuery($sql, $array)
-    {
-        $this->prepareQuery($sql, $array);
-    }
 
-    public function post($table, $fields, $values)
-    {
-        $tableFields = implode(', ', $fields);
-        $sql = "INSERT INTO $table ($fields) VALUES ($values);";
-
-    }
 }
