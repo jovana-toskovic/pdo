@@ -48,8 +48,14 @@ foreach($objects as $object){
 // ->insert(['author', 'title', 'body'], ['Karlie', 'This is new title', 'This is post body'])
 // ->post();
 
-$objects2 = $instance
+// $objects2 = $instance
+// ->table('posts')
+// ->update(['author', 'title', 'body'], ['Carl', 'This is Carl.', 'This is post by Carl'])
+// ->where(['id', '=', 11])
+// ->post();
+
+$objects3 = $instance
 ->table('posts')
-->update(['author', 'title', 'body'], ['Carl', 'This is Carl.', 'This is post by Carl'])
-->where(['id', '=', 11])
+->delete()
+->where(['id', '=', 12])
 ->post();

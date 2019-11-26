@@ -124,7 +124,6 @@ class DBConnection
     {
         $this->sql .= $where[0] . " " . $where[1] . "? ";
         array_push($this->values, $where[2]);
-        echo $this->sql;
         return $this;
     }
 
@@ -161,7 +160,6 @@ class DBConnection
         $queryValues = $this->stringifyArray(array_fill(0, count($columns), '?'));
         $this->values = array_merge($this->values, $values);
         $this->sql = "INSERT INTO $this->table ($queryColumns) VALUES ($queryValues);";
-        echo $this->sql;
         return $this;
     }
 
@@ -171,6 +169,13 @@ class DBConnection
         $queryColumns = $this->stringifyArray($columns, ' = ?, ') . " = ?";
         $this->values = array_merge($this->values, $values);
         $this->sql = "UPDATE $this->table SET $queryColumns WHERE ";
+        return $this;
+    }
+
+    //delete
+    public function delete(): object
+    {
+        $this->sql = "DELETE FROM $this->table WHERE ";
         return $this;
     }
 
@@ -210,7 +215,6 @@ class DBConnection
     public function post()
     {
         echo $this->sql;
-        print_r($this->values);
         $stmt = $this->prepareQuery($this->sql, $this->values);
         $this->values = [];
         $this->sql = "";
