@@ -71,8 +71,7 @@ class QueryBuilder
 
     public function orWhere(array $where): self
     {
-        $this->where($where, "||");
-        return $this;
+        return $this->where($where, "||");
     }
 
     //prepare query

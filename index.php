@@ -42,7 +42,7 @@ $query = new QueryBuilder();
 
 
 //$objects = $query->table(new Post)->getAll();
-$objects = $query->table(new Post)->where(['id', '=', 12])->orWhere(['author', 'LIKE', 'Anna'])->get();
+$objects = $query->table(new Post)->where(['id', '=', 10])->orWhere(['author', 'LIKE', 'Anna'])->where(['id', '=', 9])->get();
 foreach($objects as $object){
     print_r($object);
 }
