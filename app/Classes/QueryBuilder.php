@@ -21,7 +21,6 @@ class QueryBuilder
     private $class;
 
     private $numberOfWhere;
-    private $logicalOperator = '&&';
 
 
     public function __construct()
@@ -61,23 +60,29 @@ class QueryBuilder
     }
 
     //set condition
-    public function where(array $where): object
+    public function where(array $where, $logicalOperator='&&'): object
     {
         $this->numberOfWhere += 1;
-        $logicalOperator = $this->numberOfWhere > 1 ? $this->logicalOperator : '';
-        $this->sql .= "$logicalOperator " . $where[0] . " " . $where[1] . " ? ";
+        $queryOperator = $this->numberOfWhere > 1 ? $logicalOperator : '';
+        $this->sql .= "$queryOperator " . $where[0] . " " . $where[1] . " ? ";
         array_push($this->values, $where[2]);
         return $this;
     }
 
-     //prepare query
-     private function prepareQuery(string $sql, array $array=null): object
-     {
-         echo $sql;
-         $stmt = $this->connection->prepare($sql);
-         $stmt->execute($array);
-         return $stmt;
-     }
+    public function orWhere(array $where): self
+    {
+        $this->where($where, "||");
+        return $this;
+    }
+
+    //prepare query
+    private function prepareQuery(string $sql, array $array=null): object
+    {
+        echo $sql;
+        $stmt = $this->connection->prepare($sql);
+        $stmt->execute($array);
+        return $stmt;
+    }
 
      //select all
     public function getAll(): array
@@ -96,8 +101,6 @@ class QueryBuilder
         $this->fetchMode($stmt, 'CLASS');
         return $stmt->fetchAll();
     }
-
-   
 
     //set table
     // public function table($table)
