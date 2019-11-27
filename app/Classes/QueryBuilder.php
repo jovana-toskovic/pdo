@@ -94,13 +94,13 @@ class QueryBuilder
     //     return $this;
     // }
 
-    // //set condition
-    // public function where(array $where): object
-    // {
-    //     $this->sql .= $where[0] . " " . $where[1] . " ? ";
-    //     array_push($this->values, $where[2]);
-    //     return $this;
-    // }
+    //set condition
+    public function where(array $where): object
+    {
+        $this->sql .= $where[0] . " " . $where[1] . " ? ";
+        array_push($this->values, $where[2]);
+        return $this;
+    }
 
     // //stringify query parameters
     // public function stringifyArray(array $array, string $bindString = ', '): string
@@ -177,6 +177,14 @@ class QueryBuilder
     {
         $sql = "SELECT * FROM $this->table;";
         $stmt = $this->prepareQuery($sql);
+        $this->fetchMode($stmt, 'CLASS');
+        return $stmt->fetchAll();
+    }
+
+    public function get()
+    {
+        $sql = "SELECT * FROM $this->table WHERE $this->sql;";
+        $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         return $stmt->fetchAll();
     }

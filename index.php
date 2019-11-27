@@ -16,7 +16,7 @@ $query = new QueryBuilder();
 
 // $newStmt = $instance->runQuery('INSERT INTO posts (title, body, author, published, created_at) VALUES (?, ?, ?, ?, NOW());', array('New title', 'This is new post by Anna', 'Anna', true));
 
-// $array = 
+
 // $objectByCondition = $instance->table('posts')->where(["id" => 9, ">", "&&"])->where(["author" => "Anna", "LIKE"])->fetch("CLASS", Guestbook::class)->getAll();
 // foreach($objectByCondition as $object){
 //     echo "<p>ID: $object->id and AUTHOR: $object->author</p>";
@@ -41,16 +41,11 @@ $query = new QueryBuilder();
 // $posts = Post::where(['id', 17])->get();
 
 
-
-
-$objects = $query->table(new Post)->getAll();
-
+//$objects = $query->table(new Post)->getAll();
+$objects = $query->table(new Post)->where(['id', '>', 9])->get();
 foreach($objects as $object){
     print_r($object);
 }
-
-
-
 
 // $objects1 = $instance
 // ->table('posts')
