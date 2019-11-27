@@ -20,6 +20,9 @@ class QueryBuilder
     private $mode;
     private $class;
 
+    private $numberOfWhere;
+    private $logicalOperator = '&&';
+
 
     public function __construct()
     {
@@ -32,7 +35,6 @@ class QueryBuilder
     }
 
     //set fetch mode
-
     public function fetchMode(object $stmt, $mode)
     {
         switch (strtoupper($mode)) {
@@ -50,14 +52,52 @@ class QueryBuilder
         }
     }
 
-    //prepare query
-    private function prepareQuery(string $sql, array $array=null): object
+    // set table
+    public function table($model): self
     {
-        echo $sql;
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($array);
-        return $stmt;
+        $this->model = $model;
+        $this->table = $model->getTableName();
+        return $this;
     }
+
+    //set condition
+    public function where(array $where): object
+    {
+        $this->numberOfWhere += 1;
+        $logicalOperator = $this->numberOfWhere > 1 ? $this->logicalOperator : '';
+        $this->sql .= "$logicalOperator " . $where[0] . " " . $where[1] . " ? ";
+        array_push($this->values, $where[2]);
+        return $this;
+    }
+
+     //prepare query
+     private function prepareQuery(string $sql, array $array=null): object
+     {
+         echo $sql;
+         $stmt = $this->connection->prepare($sql);
+         $stmt->execute($array);
+         return $stmt;
+     }
+
+     //select all
+    public function getAll(): array
+    {
+        $sql = "SELECT * FROM $this->table;";
+        $stmt = $this->prepareQuery($sql);
+        $this->fetchMode($stmt, 'CLASS');
+        return $stmt->fetchAll();
+    }
+
+    //select
+    public function get(): array
+    {
+        $sql = "SELECT * FROM $this->table WHERE $this->sql;";
+        $stmt = $this->prepareQuery($sql, $this->values);
+        $this->fetchMode($stmt, 'CLASS');
+        return $stmt->fetchAll();
+    }
+
+   
 
     //set table
     // public function table($table)
@@ -65,12 +105,7 @@ class QueryBuilder
     //     $this->table = $table;
     //     return $this;
     // }
-    public function table($model): self
-    {
-        $this->model = $model;
-        $this->table = $model->getTableName();
-        return $this;
-    }
+   
     
     //set condition
     // public function where($where)
@@ -94,13 +129,7 @@ class QueryBuilder
     //     return $this;
     // }
 
-    //set condition
-    public function where(array $where): object
-    {
-        $this->sql .= $where[0] . " " . $where[1] . " ? ";
-        array_push($this->values, $where[2]);
-        return $this;
-    }
+   
 
     // //stringify query parameters
     // public function stringifyArray(array $array, string $bindString = ', '): string
@@ -173,21 +202,7 @@ class QueryBuilder
     //     return $stmt->fetchAll();
     // }
 
-    public function getAll()
-    {
-        $sql = "SELECT * FROM $this->table;";
-        $stmt = $this->prepareQuery($sql);
-        $this->fetchMode($stmt, 'CLASS');
-        return $stmt->fetchAll();
-    }
-
-    public function get()
-    {
-        $sql = "SELECT * FROM $this->table WHERE $this->sql;";
-        $stmt = $this->prepareQuery($sql, $this->values);
-        $this->fetchMode($stmt, 'CLASS');
-        return $stmt->fetchAll();
-    }
+    
 
     // public function get($table, $mode, $class=null)
     // {
