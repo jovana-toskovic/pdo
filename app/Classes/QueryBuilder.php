@@ -38,7 +38,7 @@ class QueryBuilder
         switch (strtoupper($mode)) {
             case "CLASS":
                 return $stmt->setFetchMode(PDO::FETCH_CLASS,  get_class($this->model));
-            case "ASSOC":
+            case "ASSOC":   // NOTE: ovo trebas da sredis, ponavlja se kao default
                 return $stmt->setFetchMode(PDO::FETCH_ASSOC);
             case "BOTH":
                 return $stmt->setFetchMode(PDO::FETCH_BOTH);
@@ -65,6 +65,7 @@ class QueryBuilder
     //     $this->table = $table;
     //     return $this;
     // }
+    // NOTE: Ulazni parametar treba da ima definisan tip (u ovom slucaju to treba da bude intrface)
     public function table($model): self
     {
         $this->model = $model;
@@ -95,7 +96,7 @@ class QueryBuilder
     // }
 
     //set condition
-    public function where(array $where): object
+    public function where(array $where): object //NOTE: self
     {
         $this->sql .= $where[0] . " " . $where[1] . " ? ";
         array_push($this->values, $where[2]);
@@ -186,7 +187,7 @@ class QueryBuilder
         $sql = "SELECT * FROM $this->table WHERE $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
-        return $stmt->fetchAll();
+        return $stmt->fetchAll(); // NOTE: ne vidim gde je ova metoda definisana
     }
 
     // public function get($table, $mode, $class=null)
