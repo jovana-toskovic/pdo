@@ -2,10 +2,11 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use App\Classes\DBConnection;
-use App\Classes\Guestbook;
+use App\Classes\Post;
+use App\Classes\Model;
+use App\Classes\QueryBuilder;
 
-$instance = DBConnection::getInstance();
+$query = new QueryBuilder();
 
 // $collection = $instance->get('posts', "CLASS", Guestbook::class);
 // foreach($collection as $object){
@@ -24,23 +25,31 @@ $instance = DBConnection::getInstance();
 // $array = $instance->getAll('SELECT * FROM posts;', "num");
 // print_r($array);
 
-
 // $objectByCondition = $instance->table('posts')->where(["id" => 9, ">", "&&"])->where(["author" => "Anna", "LIKE"])->fetch("CLASS", Guestbook::class)->getAll();
 
 
 
-$objects = $instance
-->table('posts')
-->select()
-->where(['id', '>', 9])
-->or()
-->where(['author', 'LIKE', 'Carl'])
-->fetch("CLASS", Guestbook::class)
-->getAll();
+// $objects = $query
+// ->table(new Post)
+// ->select()
+// ->where(['id', '>', 9])
+// ->or()
+// ->where(['author', 'LIKE', 'Carl'])
+// ->fetch("CLASS")
+// ->getAll();
+
+// $posts = Post::where(['id', 17])->get();
+
+
+
+
+$objects = $query->table(new Post)->getAll();
 
 foreach($objects as $object){
-    echo "<p>ID: $object->id and AUTHOR: $object->author</p>";
+    print_r($object);
 }
+
+
 
 
 // $objects1 = $instance
@@ -54,8 +63,8 @@ foreach($objects as $object){
 // ->where(['id', '=', 11])
 // ->post();
 
-$objects3 = $instance
-->table('posts')
-->delete()
-->where(['id', '=', 12])
-->post();
+// $objects3 = $instance
+// ->table('posts')
+// ->delete()
+// ->where(['id', '=', 12])
+// ->post();
