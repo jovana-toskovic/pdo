@@ -4,6 +4,7 @@ namespace App\Classes;
 
 use PDO;
 use PDOStatement;
+use Exception;
 use App\Contracts\ModelInterface;
 use App\Classes\Post;
 use App\Classes\DBConnection;
@@ -20,6 +21,8 @@ class QueryBuilder
     private $values = [];
     private $mode;
     private $class;
+    private $errorMessage = '';
+    private $error = false;
 
     private $numberOfWhere;
 
@@ -43,7 +46,15 @@ class QueryBuilder
             }
         }
         return true;
+    }
 
+    private function annul()
+    {
+        $this->table = "";
+        $this->sql = "";
+        $this->values = [];
+        $this->numberOfWhere = 0;
+        $this->error = false;
     }
 
     //set fetch mode
@@ -106,10 +117,20 @@ class QueryBuilder
     //prepare query
     private function prepareQuery(string $sql, array $array=null): PDOStatement
     {
-        echo $sql;
-        $stmt = $this->connection->prepare($sql);
-        $stmt->execute($array);
-        return $stmt;
+        try{
+            if($this->error){
+                throw new Exception($this->errorMessage);
+                die();
+            }
+    
+            echo $sql;
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($array);
+            return $stmt;
+        } catch (Exception $e) {
+            echo "<p>Message: " . $e->getMessage() . "</p>";
+        }
+        
     }
 
      //select all
@@ -127,133 +148,59 @@ class QueryBuilder
         $sql = "SELECT * FROM $this->table WHERE $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
+        $this->annul();
         return $stmt->fetchAll();
     }
 
-    //set table
-    // public function table($table)
-    // {
-    //     $this->table = $table;
-    //     return $this;
-    // }
-   
-    
-    //set condition
-    // public function where($where)
-    // {
-    //     $queryCondition = "";
-    //     $queryArray = [];
-        
-    //     $keys = array_keys($where);
+    private function implodeArray(array $array): string
+    {
+        return implode(', ', $array);
+    }
 
-    //     $operator = $where[$keys[1]];
-    //     $queryCondition = $queryCondition . " " . $keys[0] . " " . $operator . " ?";
-    
-    //     array_push($queryArray, $where[$keys[0]]);
+    private function mergeArray($array1, $array2)
+    {
+        return array_merge( $array1, $array2);
+    }
 
+    //insert
+    public function insert(array $data): void 
+    {
+        $dataKeys = array_keys($data);
+        $columns = $this->implodeArray($dataKeys);
+        $values = $this->implodeArray(array_fill(0, count($dataKeys), '?'));
+        $this->values = $this->mergeArray($this->values, array_values($data));
 
-    //     $logicalOperator = array_key_exists(2, $keys) ? $where[$keys[2]] : '';
-    //     $queryCondition = $queryCondition . " " . $logicalOperator;
-        
-    //     $this->condition = $this->condition . $queryCondition;
-    //     $this->values = array_merge($this->values, $queryArray);
-    //     return $this;
-    // }
-
-   
-
-    // //stringify query parameters
-    // public function stringifyArray(array $array, string $bindString = ', '): string
-    // {
-    //     return implode($bindString, $array);
-    // }
-
-    // //logical operators
-    // public function and(): object
-    // {
-    //     $this->sql .= '&& ';
-    //     return $this;
-    // }
-    // public function or(): object
-    // {
-    //     $this->sql .= '|| ';
-    //     return $this;
-    // }
-
-    // // select 
-    // public function select(array $parameters = ['*']): object 
-    // {
-    //     $queryParameters = $this->stringifyArray($parameters);
-    //     $this->sql = "SELECT $queryParameters FROM $this->table WHERE ";
-    //     return $this;
-    // }
-
-    // //insert
-    // public function insert(array $columns = [], array $values = []): object 
-    // {
-    //     $queryColumns = $this->stringifyArray($columns);
-    //     $queryValues = $this->stringifyArray(array_fill(0, count($columns), '?'));
-    //     $this->values = array_merge($this->values, $values);
-    //     $this->sql = "INSERT INTO $this->table ($queryColumns) VALUES ($queryValues);";
-    //     return $this;
-    // }
+        $sql = "INSERT INTO $this->table ($columns) VALUES ($values);";
+        $stmt = $this->prepareQuery($sql, $this->values);
+        $this->annul();
+    }
 
     //update
-    // public function update(array $columns = [], array $values = []): object
-    // {
-    //     $queryColumns = $this->stringifyArray($columns, ' = ?, ') . " = ?";
-    //     $this->values = array_merge($this->values, $values);
-    //     $this->sql = "UPDATE $this->table SET $queryColumns WHERE ";
-    //     return $this;
-    // }
+    public function update(array $data): void
+    {
+     
+        if ($this->sql === "" || !$this->isAssoc($data) || empty($data)){
+            $this->error = true;
+            $this->errorMessage = 'Invalid sql, no codition given.';
+        }
+    
+        $dataKeys = array_keys($data);
+        $columns = $this->implodeArray($dataKeys);
+        $this->values = $this->mergeArray(array_values($data), $this->values);
+
+        $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
+        $stmt = $this->prepareQuery($sql, $this->values);
+        $this->annul();
+       
+    }
 
     //delete
-    // public function delete(): object
-    // {
-    //     $this->sql = "DELETE FROM $this->table WHERE ";
-    //     return $this;
-    // }
+    public function delete(): void
+    {
+        $sql = "DELETE FROM $this->table WHERE $this->sql;";
+        $stmt = $this->prepareQuery($sql, $this->values);
+        $this->annul();
 
-    //set fetch mode
-    // public function fetch(string $mode): object
-    // {
-    //     $this->mode = $mode;
-    //     return $this;
-    // }
+    }
 
-    //get all
-    // public function getAll(): array
-    // {
-    //     $stmt = $this->prepareQuery($this->sql, $this->values);
-    //     $this->values = [];
-    //     echo $this->sql;
-    //     $this->sql = "";
-    //     $this->table = "";
-    //     $this->fetchMode($stmt);
-    //     return $stmt->fetchAll();
-    // }
-
-    
-
-    // public function get($table, $mode, $class=null)
-    // {
-    //     $sql = "SELECT * FROM $table;";
-    //     $stmt = $this->prepareQuery($sql);
-    //     $this->fetchMode($stmt);
-    //     return $stmt->fetchAll();
-    // }
-
-    // public function runQuery($sql, $array)
-    // {
-    //     $this->prepareQuery($sql, $array);
-    // }
-
-    // public function post(): void
-    // {
-    //     echo $this->sql;
-    //     $stmt = $this->prepareQuery($this->sql, $this->values);
-    //     $this->values = [];
-    //     $this->sql = "";
-    //     $this->table = "";
-    // }
 }

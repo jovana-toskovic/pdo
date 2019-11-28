@@ -22,7 +22,7 @@ class DBConnection implements ConnectionInterface
             $this->conn = new PDO("mysql:host={$this->dbHost}; dbname={$this->dbName}", $this->dbUser, $this->dbPassword);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
-            echo $e->getMessage();
+            echo "<p> Message: " . $e->getMessage() . "</p>";
             die();
         }
     }
