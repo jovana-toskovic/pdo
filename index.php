@@ -42,10 +42,22 @@ $query = new QueryBuilder();
 
 
 //$objects = $query->table(new Post)->getAll();
+// ['id' => 1, 'name'=> 'jovana']
 $objects = $query->table(new Post)->where(['id', '=', 10])->orWhere(['author', 'LIKE', 'Anna'])->where(['id', '=', 9])->get();
+echo "<br>";
 foreach($objects as $object){
     print_r($object);
 }
+echo "<br>";
+echo "<br>";
+$objects1 = $query->table(new Post)->where(['id' => 9, 'author' => 'Anna'])->orWhere(['author', 'LIKE', 'Dereck'])->get();
+echo "<br>";
+foreach($objects1 as $object){
+    print_r($object);
+}
+
+// $posts = new Post();
+// $object = $posts->
 
 // $objects1 = $instance
 // ->table('posts')

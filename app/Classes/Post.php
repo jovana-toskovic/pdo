@@ -3,9 +3,9 @@
 namespace App\Classes;
 
 use App\Classes\Model;
-use App\Contracts\ConnectionInterface;
+use App\Contracts\ModelInterface;
 
-class Post 
+class Post implements ModelInterface
 {
     public $id, $title, $body, $author, $published, $created_at, $entry;
     public $table = 'posts';
@@ -15,7 +15,7 @@ class Post
         $this->entry = "{$this->author} posted: {$this->body}";
     }
 
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->table;
     }

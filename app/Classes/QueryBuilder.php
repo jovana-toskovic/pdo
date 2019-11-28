@@ -3,7 +3,8 @@
 namespace App\Classes;
 
 use PDO;
-use App\Contracts\ConnectionInterface;
+use PDOStatement;
+use App\Contracts\ModelInterface;
 use App\Classes\Post;
 use App\Classes\DBConnection;
 
@@ -33,8 +34,20 @@ class QueryBuilder
         return $this->connection;
     }
 
+    private function isAssoc(array $array): bool
+    {
+        foreach($array as $key=>$value)
+        {
+            if (!is_string($key)){
+                return false;
+            }
+        }
+        return true;
+
+    }
+
     //set fetch mode
-    public function fetchMode(object $stmt, $mode)
+    public function fetchMode(PDOStatement $stmt, $mode): bool
     {
         switch (strtoupper($mode)) {
             case "CLASS":
@@ -52,30 +65,46 @@ class QueryBuilder
     }
 
     // set table
-    public function table($model): self
+    public function table(ModelInterface $model): self
     {
         $this->model = $model;
         $this->table = $model->getTableName();
         return $this;
     }
 
-    //set condition
-    public function where(array $where, $logicalOperator='&&'): object
+    private function setLOgicalOperator(string $logicalOperator): string
     {
         $this->numberOfWhere += 1;
-        $queryOperator = $this->numberOfWhere > 1 ? $logicalOperator : '';
-        $this->sql .= "$queryOperator " . $where[0] . " " . $where[1] . " ? ";
-        array_push($this->values, $where[2]);
+        return $this->numberOfWhere > 1 ? $logicalOperator : '';
+    }
+
+
+    //set condition
+    public function where(array $where, string $logicalOperator=' &&'): self
+    {
+
+        if($this->isAssoc($where)){
+            foreach ($where as $key=>$value){
+                $queryOperator = $this->setLOgicalOperator($logicalOperator);
+                $this->sql .= "$queryOperator " . " " . $key . " = ?";
+                array_push($this->values, $value);
+            }
+        }else {
+            $queryOperator = $this->setLOgicalOperator($logicalOperator);
+            $this->sql .= "$queryOperator " . $where[0] . " " . $where[1] . " ? ";
+            array_push($this->values, $where[2]);
+        }
+  
         return $this;
     }
 
     public function orWhere(array $where): self
     {
-        return $this->where($where, "||");
+        return $this->where($where, " ||");
     }
 
     //prepare query
-    private function prepareQuery(string $sql, array $array=null): object
+    private function prepareQuery(string $sql, array $array=null): PDOStatement
     {
         echo $sql;
         $stmt = $this->connection->prepare($sql);

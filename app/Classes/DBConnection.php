@@ -37,7 +37,7 @@ class DBConnection implements ConnectionInterface
     }
 
     //get only one instance
-    public static function getInstance(): object
+    public static function getInstance(): self
     {
         if(!self::$instance)
         {
@@ -47,7 +47,7 @@ class DBConnection implements ConnectionInterface
         return self::$instance;
     }
 
-    public function getConnection(): object
+    public function getConnection(): PDO
     {
         return $this->conn;
     }
