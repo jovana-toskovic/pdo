@@ -63,8 +63,6 @@ class QueryBuilder
         switch (strtoupper($mode)) {
             case "CLASS":
                 return $stmt->setFetchMode(PDO::FETCH_CLASS,  get_class($this->model));
-            case "ASSOC":
-                return $stmt->setFetchMode(PDO::FETCH_ASSOC);
             case "BOTH":
                 return $stmt->setFetchMode(PDO::FETCH_BOTH);
             case "NUM":
@@ -181,7 +179,7 @@ class QueryBuilder
      
         if ($this->sql === "" || !$this->isAssoc($data) || empty($data)){
             $this->error = true;
-            $this->errorMessage = 'Invalid sql, no codition given.';
+            $this->errorMessage = 'Invalid sql, no condition given.';
         }
     
         $dataKeys = array_keys($data);

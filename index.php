@@ -66,7 +66,7 @@ echo "<br>";
 
 // $insert = $query->table(new Post)->insert(['title'=>'Title', 'body'=>'Some text', 'author'=>'Michael', 'created_at'=> date("Y-m-d H:i:s"), 'published' => true]);
 
-// $update = $query->table(new Post)->where(['id' => 19])->update(['author'=>'Marc']);
+$update = $query->table(new Post)->where(['id' => 19])->update(['author'=>'Marc']);
 // $delete = $query->table(new Post)->where(['id' => 16])->delete();
 
 
