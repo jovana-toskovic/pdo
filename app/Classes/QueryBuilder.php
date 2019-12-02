@@ -6,8 +6,6 @@ use PDO;
 use PDOStatement;
 use Exception;
 use App\Contracts\ModelInterface;
-use App\Classes\Post;
-use App\Classes\DBConnection;
 
 class QueryBuilder
 {
@@ -17,11 +15,8 @@ class QueryBuilder
     private $table;
     private $model;
     private $sql;
-    private $condition;
     private $values = [];
-    private $mode;
-    private $class;
-    private $errorMessage = '';
+    private $errorMessages = [];
     private $error = false;
 
     private $numberOfWhere;
@@ -81,25 +76,45 @@ class QueryBuilder
         return $this;
     }
 
-    private function setLOgicalOperator(string $logicalOperator): string
+    private function setLogicalOperator(string $logicalOperator): string
     {
         $this->numberOfWhere += 1;
         return $this->numberOfWhere > 1 ? $logicalOperator : '';
     }
 
+    //validate
+    public function validate($data): void
+    {
+        foreach ($data as $key=>$value){
+            if($value === null) {
+                $this->error = true;
+                $this->errorMessages[] = "Invalid sql, $key must not be of the type null.";
+            }
+        }
+    }
+
+    //check sql
+    public function validateArrayType($data) {
+        if (!$this->isAssoc($data) ){
+            $this->error = true;
+            $this->errorMessages[] = "Invalid sql, wrong type of parameter sent, data must be of the type associative array.";
+        }
+    }
 
     //set condition
     public function where(array $where, string $logicalOperator=' &&'): self
     {
 
         if($this->isAssoc($where)){
+            $this->validate($where);
             foreach ($where as $key=>$value){
-                $queryOperator = $this->setLOgicalOperator($logicalOperator);
+                $queryOperator = $this->setLogicalOperator($logicalOperator);
                 $this->sql .= "$queryOperator " . " " . $key . " = ?";
                 array_push($this->values, $value);
             }
         }else {
-            $queryOperator = $this->setLOgicalOperator($logicalOperator);
+            $this->validate([$where[0] => $where[2]]);
+            $queryOperator = $this->setLogicalOperator($logicalOperator);
             $this->sql .= "$queryOperator " . $where[0] . " " . $where[1] . " ? ";
             array_push($this->values, $where[2]);
         }
@@ -115,19 +130,19 @@ class QueryBuilder
     //prepare query
     private function prepareQuery(string $sql, array $array=null): PDOStatement
     {
-        try{
             if($this->error){
-                throw new Exception($this->errorMessage);
+                foreach($this->errorMessages as $error){
+                    throw new Exception($error);
+                }
+                $this->errorMessages = [];
+                $this->error = false;
                 die();
             }
-    
             echo $sql;
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($array);
             return $stmt;
-        } catch (Exception $e) {
-            echo "<p>Message: " . $e->getMessage() . "</p>";
-        }
+
         
     }
 
@@ -161,12 +176,15 @@ class QueryBuilder
     }
 
     //insert
-    public function insert(array $data): void 
+    public function insert(array $data): void
     {
+        $this->validate($data);
+        $this->validateArrayType($data);
         $dataKeys = array_keys($data);
+        $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
         $values = $this->implodeArray(array_fill(0, count($dataKeys), '?'));
-        $this->values = $this->mergeArray($this->values, array_values($data));
+        $this->values = $this->mergeArray($this->values, $dataValues);
 
         $sql = "INSERT INTO $this->table ($columns) VALUES ($values);";
         $stmt = $this->prepareQuery($sql, $this->values);
@@ -176,20 +194,16 @@ class QueryBuilder
     //update
     public function update(array $data): void
     {
-     
-        if ($this->sql === "" || !$this->isAssoc($data) || empty($data)){
-            $this->error = true;
-            $this->errorMessage = 'Invalid sql, no condition given.';
-        }
-    
+        $this->validate($data);
+        $this->validateArrayType($data);
         $dataKeys = array_keys($data);
+        $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
-        $this->values = $this->mergeArray(array_values($data), $this->values);
+        $this->values = $this->mergeArray($dataValues, $this->values);
 
         $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->annul();
-       
     }
 
     //delete
