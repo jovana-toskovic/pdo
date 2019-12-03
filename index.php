@@ -6,6 +6,7 @@ use App\Classes\Post;
 use App\Classes\Model;
 use App\Classes\QueryBuilder;
 
+
 $query = new QueryBuilder();
 
 

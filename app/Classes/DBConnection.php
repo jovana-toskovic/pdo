@@ -6,20 +6,17 @@ use PDO;
 use PDOException;
 use App\Contracts\ConnectionInterface;
 
+
 class DBConnection implements ConnectionInterface
 {
     private static $instance = false;
     private $conn;
 
-    private $dbName = "pdo";
-    private $dbUser = "root";
-    private $dbPassword = "43>RDaW5";
-    private $dbHost = "localhost";
-
     private function __construct()
     {
+        $config = require_once (dirname(__DIR__).'/../config.php');
         try {
-            $this->conn = new PDO("mysql:host={$this->dbHost}; dbname={$this->dbName}", $this->dbUser, $this->dbPassword);
+            $this->conn = new PDO("mysql:host={$config['host']}; dbname={$config['database']}", $config['username'], $config['pass']);
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
             echo "<p> Message: " . $e->getMessage() . "</p>";

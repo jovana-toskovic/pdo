@@ -88,7 +88,7 @@ class QueryBuilder
         foreach ($data as $key=>$value){
             if($value === null) {
                 $this->error = true;
-                $this->errorMessages[] = "Invalid sql, $key must not be of the type null.";
+                $this->errorMessages[] = "$key must not be of the type null";
             }
         }
     }
@@ -97,8 +97,13 @@ class QueryBuilder
     public function validateArrayType($data) {
         if (!$this->isAssoc($data) ){
             $this->error = true;
-            $this->errorMessages[] = "Invalid sql, wrong type of parameter sent, data must be of the type associative array.";
+            $this->errorMessages[] = "wrong type of parameter sent, data must be of the type associative array";
         }
+    }
+
+    public function validation($data, $assocArray)
+    {
+
     }
 
     //set condition
@@ -131,9 +136,8 @@ class QueryBuilder
     private function prepareQuery(string $sql, array $array=null): PDOStatement
     {
             if($this->error){
-                foreach($this->errorMessages as $error){
-                    throw new Exception($error);
-                }
+                throw new Exception("Invalid query: " . implode('; ', $this->errorMessages));
+
                 $this->errorMessages = [];
                 $this->error = false;
                 die();
@@ -142,8 +146,6 @@ class QueryBuilder
             $stmt = $this->connection->prepare($sql);
             $stmt->execute($array);
             return $stmt;
-
-        
     }
 
      //select all
@@ -170,11 +172,6 @@ class QueryBuilder
         return implode(', ', $array);
     }
 
-    private function mergeArray($array1, $array2)
-    {
-        return array_merge( $array1, $array2);
-    }
-
     //insert
     public function insert(array $data): void
     {
@@ -184,7 +181,7 @@ class QueryBuilder
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
         $values = $this->implodeArray(array_fill(0, count($dataKeys), '?'));
-        $this->values = $this->mergeArray($this->values, $dataValues);
+        $this->values = array_merge($this->values, $dataValues);
 
         $sql = "INSERT INTO $this->table ($columns) VALUES ($values);";
         $stmt = $this->prepareQuery($sql, $this->values);
@@ -199,7 +196,7 @@ class QueryBuilder
         $dataKeys = array_keys($data);
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
-        $this->values = $this->mergeArray($dataValues, $this->values);
+        $this->values = array_merge($dataValues, $this->values);
 
         $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
