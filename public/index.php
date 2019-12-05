@@ -1,6 +1,7 @@
 <?php
 
 require __DIR__ . '/vendor/autoload.php';
+// require ('core/init.php')
 
 use App\Classes\Post;
 use App\Classes\Model;
@@ -9,6 +10,9 @@ use App\Classes\QueryBuilder;
 
 $query = new QueryBuilder();
 
+// App::bind('config', require('config.php'));
+
+// App::resolve('config');
 
 // $posts = Post::where(['id', 17])->get();
 
