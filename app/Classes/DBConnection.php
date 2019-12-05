@@ -18,13 +18,23 @@ class DBConnection implements ConnectionInterface
 
     private function __construct()
     {
+        $config = require __DIR__ . '/../Core/config.php';
+        $config = $config['database'];
+        print_r($config);
         try {
-            $this->conn = new PDO("mysql:host={$this->dbHost}; dbname={$this->dbName}", $this->dbUser, $this->dbPassword);
+            $this->conn = new PDO(
+                $config['connection'].';dbname='.$config['name'],
+                $config['username'],
+                $config['password'],
+                $config['options']
+            );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
             echo "<p> Message: " . $e->getMessage() . "</p>";
             die();
         }
+
+
     }
 
     //make clone private

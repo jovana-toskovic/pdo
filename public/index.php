@@ -1,18 +1,10 @@
 <?php
 
-require __DIR__ . '/vendor/autoload.php';
+require __DIR__ . '/../vendor/autoload.php';
 
 use App\Classes\Post;
-use App\Classes\Model;
-use App\Classes\QueryBuilder;
 
-$query = new QueryBuilder();
-
-
-// $posts = Post::where(['id', 17])->get();
-
-
-//$objects = $query->table(new Post)->getAll();
+$query = require __DIR__ . '/../app/Core/bootstrap.php';
 
 $objects = $query->table(new Post)->where(['id', '=', 10])->orWhere(['author', 'LIKE', 'Anna'])->where(['id', '=', 9])->get();
 
@@ -36,6 +28,5 @@ echo "<br>";
 echo "<br>";
 
 //$insert = $query->table(new Post)->insert(['title'=>'Title', 'body'=>'Some text', 'author'=>'Michael', 'created_at'=> date("Y-m-d H:i:s"), 'published' => true]);
-
 //$update = $query->table(new Post)->where(['id' => 19])->update(['author'=>'Marc']);
-// $delete = $query->table(new Post)->where(['id' => 16])->delete();
+//$delete = $query->table(new Post)->where(['id' => 16])->delete();

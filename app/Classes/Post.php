@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Classes;
-
-use App\Classes\Model;
 use App\Contracts\ModelInterface;
 
 class Post implements ModelInterface

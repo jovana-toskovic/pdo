@@ -5,7 +5,6 @@ namespace App\Classes;
 use PDO;
 use PDOStatement;
 use Exception;
-use App\Contracts\ModelInterface;
 
 class QueryBuilder
 {
@@ -22,9 +21,9 @@ class QueryBuilder
     private $numberOfWhere;
 
 
-    public function __construct()
+    public function __construct($connection)
     {
-        $this->connection = DBConnection::getInstance()->getConnection();
+        $this->connection = $connection;
     }
 
     public function getConnection()
