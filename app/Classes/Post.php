@@ -20,7 +20,7 @@ class Post implements ModelInterface
         return $this->table;
     }
 
-    public function getModelProperties()
+    public function getColumnNames()
     {
         return $this->columnNames;
     }

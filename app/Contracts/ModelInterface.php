@@ -6,5 +6,5 @@ interface ModelInterface
 {
     public function getTableName();
 
-    public function getModelProperties();
+    public function getColumnNames();
 }

@@ -6,6 +6,7 @@ use PDO;
 use PDOStatement;
 use Exception;
 use App\Contracts\ModelInterface;
+use App\Classes\Validation\Validator;
 
 class QueryBuilder
 {
@@ -18,20 +19,14 @@ class QueryBuilder
     private $model;
     private $sql;
     private $values = [];
-    private $errorMessages = [];
     private $error = false;
 
     private $numberOfWhere;
 
-    public function __construct($connection, $validator)
+    public function __construct($connection, Validator $validator)
     {
         $this->connection = $connection;
         $this->validator = $validator;
-    }
-
-    public function getConnection()
-    {
-        return $this->connection;
     }
 
     private function isAssoc(array $array): bool
@@ -45,7 +40,8 @@ class QueryBuilder
         return true;
     }
 
-    private function annul()
+    //unset all
+    private function unset()
     {
         $this->table = "";
         $this->sql = "";
@@ -78,65 +74,33 @@ class QueryBuilder
         return $this;
     }
 
+    // set logical operator
     private function setLogicalOperator(string $logicalOperator): string
     {
         $this->numberOfWhere += 1;
         return $this->numberOfWhere > 1 ? $logicalOperator : '';
     }
 
-    //validate
-//    public function validate($data): void
-//    {
-//        $operators = ['LIKE', "=", "!=", ">", "<", ">=", "<="];
-//        echo "<br>";
-//
-//        foreach ($data as $key => $value) {
-//
-//            if($value === null) {
-//                $this->error = true;
-//                $this->errorMessages[] = "Invalid sql, $key must not be of the type null.";
-//            }
-//
-//            if ($key !== "operator" && !in_array( $key, $this->model->getModelProperties(),true )) {
-//                $this->error = true;
-//                $this->errorMessages[] = "Invalid sql, $key does not exists in table.";
-//            }
-//
-//            if($key === "operator" && !in_array($value, $operators, true) ) {
-//                echo $value;
-//
-//                $this->error = true;
-//                $this->errorMessages[] = "Invalid sql, operator $value is invalid.";
-//            }
-//        }
-//    }
-
-    //check sql
-    public function validateArrayType($data) {
-        if (!$this->isAssoc($data) ){
-            $this->error = true;
-            $this->errorMessages[] = "Invalid sql, wrong type of parameter sent, data must be of the type associative array.";
-        }
-    }
-
     //set condition
     public function where(array $where, string $logicalOperator=' &&'): self
     {
-
-        if($this->isAssoc($where)){
-            $this->validator->validate($where, $this->model);
-            foreach ($where as $key=>$value){
-                $queryOperator = $this->setLogicalOperator($logicalOperator);
-                $this->sql .= "$queryOperator " . " " . $key . " = ?";
-                array_push($this->values, $value);
-            }
-        }else {
-            $this->validator->validate([$where[0] => $where[2], "operator" => $where[1]], $this->model);
-            $queryOperator = $this->setLogicalOperator($logicalOperator);
-            $this->sql .= "$queryOperator " . $where[0] . " " . $where[1] . " ? ";
-            array_push($this->values, $where[2]);
+        $operator = "=";
+        if(!$this->isAssoc($where)){
+            $operator =  $where[1];
+            $data = [$where[0] => $where[2]];
+        } else {
+            $data = $where;
         }
-  
+
+        $this->validator->validate(array_merge($data, ["operator"=>$operator]), $this->model);
+
+        foreach ($data as $key=>$value){
+
+            $queryOperator = $this->setLogicalOperator($logicalOperator);
+            $this->sql .= "$queryOperator " . " " . $key . " $operator ?";
+            array_push($this->values, $value);
+        }
+
         return $this;
     }
 
@@ -148,7 +112,7 @@ class QueryBuilder
     //prepare query
     private function prepareQuery(string $sql, array $array=null): PDOStatement
     {
-        if(!empty($this->validator->errors)){
+        if(!empty($this->validator->getErrors())){
             foreach($this->validator->getErrors() as $error){
                 throw new Exception($error);
             }
@@ -175,7 +139,7 @@ class QueryBuilder
         $sql = "SELECT * FROM $this->table WHERE $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
-        $this->annul();
+        $this->unset();
 
         return $stmt->fetchAll();
     }
@@ -185,40 +149,35 @@ class QueryBuilder
         return implode(', ', $array);
     }
 
-    private function mergeArray($array1, $array2)
-    {
-        return array_merge( $array1, $array2);
-    }
-
     //insert
     public function insert(array $data): void
     {
         $this->validator->validate($data, $this->model);
-        $this->validateArrayType($data);
+
         $dataKeys = array_keys($data);
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
         $values = $this->implodeArray(array_fill(0, count($dataKeys), '?'));
-        $this->values = $this->mergeArray($this->values, $dataValues);
+        $this->values = $this->array_merge($this->values, $dataValues);
 
         $sql = "INSERT INTO $this->table ($columns) VALUES ($values);";
         $stmt = $this->prepareQuery($sql, $this->values);
-        $this->annul();
+        $this->unset();
     }
 
     //update
     public function update(array $data): void
     {
         $this->validator->validate($data, $this->model);
-        $this->validateArrayType($data);
+
         $dataKeys = array_keys($data);
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
-        $this->values = $this->mergeArray($dataValues, $this->values);
+        $this->values = $this->array_merge($dataValues, $this->values);
 
         $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
-        $this->annul();
+        $this->unset();
     }
 
     //delete
@@ -226,8 +185,6 @@ class QueryBuilder
     {
         $sql = "DELETE FROM $this->table WHERE $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
-        $this->annul();
-
+        $this->unset();
     }
-
 }
