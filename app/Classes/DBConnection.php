@@ -33,8 +33,6 @@ class DBConnection implements ConnectionInterface
             echo "<p> Message: " . $e->getMessage() . "</p>";
             die();
         }
-
-
     }
 
     //make clone private
