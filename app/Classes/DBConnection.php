@@ -39,7 +39,7 @@ class DBConnection implements ConnectionInterface
     private function __clone()
     {
     }
-    //make clone wakeup
+    //make private wakeup
     private function __wakeup()
     {
     }

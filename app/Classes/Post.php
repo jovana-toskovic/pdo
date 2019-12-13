@@ -5,7 +5,8 @@ use App\Contracts\ModelInterface;
 
 class Post implements ModelInterface
 {
-    private $id, $title, $body, $author, $published, $created_at;
+    private $id;
+    public $title, $body, $author, $published, $created_at;
     private $columnNames = Array("id", "title", "body", "author", "published", "created_at");
     public $entry;
     public $table = 'posts';
@@ -25,21 +26,3 @@ class Post implements ModelInterface
         return $this->columnNames;
     }
 }
-
-
-//class Validator {
-//    private $errors = [];
-//
-//    private function isValueValid() {
-//
-//        $error[] = "Value is not valid";
-//    }
-//
-//    private function isColumnValid() {
-//
-//    }
-//
-//    public function validate() {
-//        if ()
-//    }
-//}

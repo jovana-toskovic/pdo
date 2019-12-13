@@ -81,7 +81,7 @@ class QueryBuilder
         return $this->numberOfWhere > 1 ? $logicalOperator : '';
     }
 
-    //set condition
+    // set condition
     public function where(array $where, string $logicalOperator=' &&'): self
     {
         $operator = "=";
@@ -158,7 +158,7 @@ class QueryBuilder
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
         $values = $this->implodeArray(array_fill(0, count($dataKeys), '?'));
-        $this->values = $this->array_merge($this->values, $dataValues);
+        $this->values = array_merge($this->values, $dataValues);
 
         $sql = "INSERT INTO $this->table ($columns) VALUES ($values);";
         $stmt = $this->prepareQuery($sql, $this->values);
@@ -173,7 +173,7 @@ class QueryBuilder
         $dataKeys = array_keys($data);
         $dataValues = array_values($data);
         $columns = $this->implodeArray($dataKeys);
-        $this->values = $this->array_merge($dataValues, $this->values);
+        $this->values = array_merge($dataValues, $this->values);
 
         $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
