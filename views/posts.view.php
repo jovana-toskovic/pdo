@@ -10,8 +10,9 @@
 
                 <div class="flex baseline">
                     <div></div>
-                    <p><b><?php echo htmlspecialchars($post->author) . ":" ; ?></b></p>
+                    <p><b><?php echo htmlspecialchars($post->author) . ": " ; ?></b></p>
                     <p><?php echo htmlspecialchars($post->body); ?></p>
+                    <p><?php echo htmlspecialchars($post->id); ?></p>
                 </div>
 
             <?php endforeach; ?>

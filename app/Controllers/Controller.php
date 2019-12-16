@@ -29,38 +29,31 @@ class Controller
     public function index($arg=[])
     {
         var_dump($arg);
-        if (!empty($arg) ) {
+        if (!empty($arg)) {
             $posts = $this->db->table($this->post)->where($arg)->get();
         } else {
             $posts = $this->db->table($this->post)->getAll();
         }
 
-//        view('post/index.php', $posts);
+//      view('post/index.php', $posts);
         require PageHelper::displayPage('posts.view.php');
     }
 
     public function edit($arg)
     {
-        var_dump($arg);
-        echo 'edit';
         $condition = ['id' => $arg['id']];
-        $data = $arg;
-        unset($data['id']);
+        $this->db->table(new Post)->where($condition)->update($arg);
+        $this->index($condition);
+    }
 
-        $this->db->table(new Post)->where($condition)->update($data);
+    public function create($arg) {
+        $this->db->table(new Post)->insert($arg);
+        $this->index();
+    }
 
-        $posts = $this->index($condition);
-
-
-        require PageHelper::displayPage('posts.view.php');
-
-
+    public function delete($arg) {
+        $this->db->table(new Post)->where($arg)->delete();
+        $this->index();
     }
 
 }
-
-
-// Što se tiče rutera. Treba da napraviš klasu koja hvata sve requeste.
-// Ukoliko se putanja iz url adrese poklapa sa putanjom koju si
-// definisala u ruteru treba da se izvrši odredjena akcija.
-// Nema potreba da gadjaš direktnon php failove

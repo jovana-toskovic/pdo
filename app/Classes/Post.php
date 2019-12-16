@@ -5,7 +5,7 @@ use App\Contracts\ModelInterface;
 
 class Post implements ModelInterface
 {
-    private $id;
+    public $id;
     public $title, $body, $author, $published, $created_at;
     private $columnNames = Array("id", "title", "body", "author", "published", "created_at");
     public $entry;

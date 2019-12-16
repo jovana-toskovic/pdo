@@ -172,10 +172,15 @@ class QueryBuilder
 
         $dataKeys = array_keys($data);
         $dataValues = array_values($data);
-        $columns = $this->implodeArray($dataKeys);
+        $columns = [];
+        foreach($dataKeys as $column) {
+            $columns[] = $column . " = ?";
+        }
+        $columns = $this->implodeArray($columns);
+        var_dump($columns);
         $this->values = array_merge($dataValues, $this->values);
 
-        $sql = "UPDATE $this->table SET $columns" . " = ? WHERE $this->sql";
+        $sql = "UPDATE $this->table SET $columns WHERE $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->unset();
     }
