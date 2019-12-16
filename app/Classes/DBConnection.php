@@ -18,6 +18,7 @@ class DBConnection implements ConnectionInterface
 
     private function __construct()
     {
+        // NOTES: ovo nije dobro resenje. Ne mozemo importovati file u constructor
         $config = require __DIR__ . '/../Core/config.php';
         $config = $config['database'];
         print_r($config);

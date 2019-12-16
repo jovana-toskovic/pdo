@@ -2,6 +2,7 @@
 
 namespace App\Classes\Validation;
 
+// ova klasa bi trebalo da se naznaci da je na menjena za validaciju Query Buildera
 class Validator
 {
 

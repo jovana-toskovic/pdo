@@ -17,6 +17,7 @@ class Controller
 
     public function __construct()
     {
+        // QueryBuilder bi trebaloda da instanciramo samo na jednom mestu, koliko vidim vec je instanciran u bootstrap failu
         $this->db = new QueryBuilder(
             DBConnection::getInstance()->getConnection(),
             new Validator()
