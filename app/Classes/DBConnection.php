@@ -18,11 +18,19 @@ class DBConnection implements ConnectionInterface
 
     private function __construct()
     {
+        $config = require __DIR__ . '/../Core/config.php';
+        $config = $config['database'];
+        print_r($config);
         try {
-            $this->conn = new PDO("mysql:host={$this->dbHost}; dbname={$this->dbName}", $this->dbUser, $this->dbPassword);
+            $this->conn = new PDO(
+                $config['connection'].';dbname='.$config['name'],
+                $config['username'],
+                $config['password'],
+                $config['options']
+            );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
         } catch(PDOException $e) {
-            echo $e->getMessage();
+            echo "<p> Message: " . $e->getMessage() . "</p>";
             die();
         }
     }
@@ -31,13 +39,13 @@ class DBConnection implements ConnectionInterface
     private function __clone()
     {
     }
-    //make clone wakeup
+    //make private wakeup
     private function __wakeup()
     {
     }
 
     //get only one instance
-    public static function getInstance(): object
+    public static function getInstance(): self
     {
         if(!self::$instance)
         {
@@ -47,7 +55,7 @@ class DBConnection implements ConnectionInterface
         return self::$instance;
     }
 
-    public function getConnection(): object
+    public function getConnection(): PDO
     {
         return $this->conn;
     }

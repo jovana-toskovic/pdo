@@ -1,0 +1,14 @@
+
+.flex {
+    display: flex;
+    flex-direction: row;
+}
+
+.center {
+    align-items: center;
+}
+
+.baseline {
+    align-items: baseline;
+}
+

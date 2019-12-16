@@ -1,14 +1,14 @@
 <?php
 
 namespace App\Classes;
+use App\Contracts\ModelInterface;
 
-use App\Classes\Model;
-use App\Contracts\ConnectionInterface;
-
-class Post 
+class Post implements ModelInterface
 {
-    // NOTE: polja treba da smestimo u nizu
-    public $id, $title, $body, $author, $published, $created_at, $entry;
+    private $id;
+    public $title, $body, $author, $published, $created_at;
+    private $columnNames = Array("id", "title", "body", "author", "published", "created_at");
+    public $entry;
     public $table = 'posts';
 
     public function __construct()
@@ -16,9 +16,13 @@ class Post
         $this->entry = "{$this->author} posted: {$this->body}";
     }
 
-    // NOTE: getTableName treba da bude abstraktna metoda nasledjena iz model klase ili da bude vezana za intrfejs
-    public function getTableName()
+    public function getTableName(): string
     {
         return $this->table;
+    }
+
+    public function getColumnNames()
+    {
+        return $this->columnNames;
     }
 }
