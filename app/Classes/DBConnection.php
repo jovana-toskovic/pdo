@@ -16,12 +16,9 @@ class DBConnection implements ConnectionInterface
     private $dbPassword = "43>RDaW5";
     private $dbHost = "localhost";
 
-    private function __construct()
+    private function __construct($config=[])
     {
-        // NOTES: ovo nije dobro resenje. Ne mozemo importovati file u constructor
-        $config = require __DIR__ . '/../Core/config.php';
-        $config = $config['database'];
-        print_r($config);
+
         try {
             $this->conn = new PDO(
                 $config['connection'].';dbname='.$config['name'],
@@ -46,11 +43,11 @@ class DBConnection implements ConnectionInterface
     }
 
     //get only one instance
-    public static function getInstance(): self
+    public static function getInstance($config=[]): self
     {
         if(!self::$instance)
         {
-            self::$instance = new DBConnection();
+            self::$instance = new DBConnection($config);
         }
 
         return self::$instance;

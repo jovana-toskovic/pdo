@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use App\Classes\DBConnection;
 use PDO;
 use PDOStatement;
 use Exception;

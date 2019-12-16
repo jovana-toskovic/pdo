@@ -38,15 +38,18 @@ class Router
 
     public function direct($uri, $requestType)
     {
+
         $urlArray = explode('/', $uri);
+
         if($requestType === 'GET') {
-            if(count($urlArray) > 1) {
+            array_splice( $urlArray, 1, 0, 'index');
+            if(count($urlArray) > 2) {
                 $this->arguments = ['id' => $urlArray[1]];
             }
-            $this->path = "$urlArray[0].$this->path";
-        } else {
-            $this->path = "$urlArray[0].$urlArray[1]";
         }
+
+        $this->path = "$urlArray[0]/$urlArray[1]";
+
 
         if($requestType === 'PUT') {
             parse_str(file_get_contents("php://input"), $_PUT);

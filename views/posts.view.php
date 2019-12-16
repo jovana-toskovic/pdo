@@ -6,7 +6,7 @@
             </style>
         </head>
         <body>
-            <?php foreach ($posts as $post) : ?>
+            <?php foreach ($params as $post) : ?>
 
                 <div class="flex baseline">
                     <div></div>

@@ -6,7 +6,7 @@ require __DIR__ . '/../app/Core/bootstrap.php';
 use App\Core\Request;
 
 $url =  new Request();
-$router->direct($url->uri(), $url->method() );
+$router->direct($url->uri(), $url->method());
 
 
 //$objects = $query->table(new Post)->where(['id', '=', 10])->orWhere(['author', 'LIKE', 'Anna'])->where(['id', '=', 9])->get();

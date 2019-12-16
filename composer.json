@@ -1,6 +1,9 @@
 {
     "autoload": {
-        "psr-4": {"App\\": "app/"}
+        "psr-4": {"App\\": "app/"},
+        "files": [
+            "app/functions/helper.php"
+        ]
     },
     "require": {
         "ext-pdo": "*"
