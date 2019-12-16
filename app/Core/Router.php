@@ -49,7 +49,9 @@ class Router
         }
 
         if($requestType === 'PUT') {
-            $this->arguments = $_GET;
+            parse_str(file_get_contents("php://input"), $_PUT);
+            $_REQUEST = array_merge($_REQUEST, $_PUT);
+            $this->arguments = $_REQUEST;
             if ($urlArray[2] !== $this->arguments['id']) {
                 throw new Exception('Id does not match.');
             }
