@@ -11,14 +11,8 @@ class DBConnection implements ConnectionInterface
     private static $instance = false;
     private $conn;
 
-    private $dbName = "pdo";
-    private $dbUser = "root";
-    private $dbPassword = "43>RDaW5";
-    private $dbHost = "localhost";
-
     private function __construct($config=[])
     {
-
         try {
             $this->conn = new PDO(
                 $config['connection'].';dbname='.$config['name'],

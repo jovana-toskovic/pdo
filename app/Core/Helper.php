@@ -2,17 +2,19 @@
 
 namespace App\Core;
 
+use App\Classes\QueryBuilder;
+
 class Helper
 {
-    public static $argument;
+    private static $db;
 
-    public static function get($argument)
+    public static function getDB(QueryBuilder $db)
     {
-        static::$argument = $argument;
+        static::$db  = $db;
     }
 
-    public static function return()
+    public static function returnDB()
     {
-        return static::$argument;
+        return static::$db;
     }
 }

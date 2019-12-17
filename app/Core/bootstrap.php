@@ -6,7 +6,8 @@ use App\Classes\Validation\Validator;
 use App\Core\Router;
 use App\Core\Helper;
 
-// ovde nam treba constanta BASIC_PATH
+define('BASIC_PATH', __DIR__ . '/../../');
+
 
 $router = new Router();
 
@@ -19,6 +20,6 @@ $db = new QueryBuilder(
     new Validator()
 );
 
-Helper::get($db);
+Helper::getDB($db);
 
 

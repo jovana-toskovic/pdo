@@ -2,7 +2,7 @@
     <html>
         <head>
             <style>
-                <?php require_once __DIR__ . "/../public/css/style.css"; ?>
+                <?php require_once BASIC_PATH . "public/css/style.css"; ?>
             </style>
         </head>
         <body>
