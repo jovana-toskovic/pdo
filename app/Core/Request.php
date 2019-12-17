@@ -26,6 +26,10 @@ class Request
             }
         }
 
+        if($requestType === 'POST') {
+            $_REQUEST = $_POST;
+        }
+
         $model = $urlArray[0];
         $path = "$urlArray[0]/$urlArray[1]";
         return ['path' => $path, 'arguments' => $_REQUEST, 'model' => $model];
