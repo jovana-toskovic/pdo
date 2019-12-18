@@ -2,7 +2,7 @@
 
 namespace App\Controllers;
 
-use App\Core\Helper;
+use App\Core\DB;
 
 class Controller
 {
@@ -12,7 +12,7 @@ class Controller
     public function __construct($model)
     {
         $modelName = "App\Classes\\" . rtrim(ucfirst($model), 's');
-        $this->db = Helper::returnDB();
+        $this->db = DB::return();
         $this->model = new $modelName();
     }
 
@@ -30,13 +30,31 @@ class Controller
     public function edit($arg)
     {
         $condition = ['id' => $arg['id']];
-        $this->db->table($this->model)->where($condition)->update($arg);
-        $this->index($condition);
+        if (!empty($arg)) {
+            $this->db->table($this->model)->where($condition)->update($arg);
+            $this->index($condition);
+        }
+
+    }
+
+    public function update($arg)
+    {
+        $post =  $this->db->table($this->model)->where($arg)->get();
+        var_dump($post[0]->author);
+        view('posts.edit.view', $post[0]);
+
+    }
+
+    public function store($arg=[])
+    {
+        view('posts.create.view');
     }
 
     public function create($arg) {
-        $this->db->table($this->model)->insert($arg);
-        $this->index();
+        if (!empty($arg)) {
+            $this->db->table($this->model)->insert($arg);
+            $this->index();
+        }
     }
 
     public function delete($arg) {

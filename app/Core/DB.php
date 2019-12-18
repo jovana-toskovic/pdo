@@ -4,16 +4,16 @@ namespace App\Core;
 
 use App\Classes\QueryBuilder;
 
-class Helper
+class DB
 {
     private static $db;
 
-    public static function getDB(QueryBuilder $db)
+    public static function get(QueryBuilder $db)
     {
         static::$db  = $db;
     }
 
-    public static function returnDB()
+    public static function return()
     {
         return static::$db;
     }

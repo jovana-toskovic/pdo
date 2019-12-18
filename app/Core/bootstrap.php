@@ -4,10 +4,9 @@ use App\Classes\DBConnection;
 use App\Classes\QueryBuilder;
 use App\Classes\Validation\Validator;
 use App\Core\Router;
-use App\Core\Helper;
+use App\Core\DB;
 
 define('BASIC_PATH', __DIR__ . '/../../');
-
 
 $router = new Router();
 
@@ -20,6 +19,6 @@ $db = new QueryBuilder(
     new Validator()
 );
 
-Helper::getDB($db);
+DB::get($db);
 
 

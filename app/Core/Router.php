@@ -34,13 +34,13 @@ class Router
 
     public function direct($params, $requestType)
     {
-        var_dump($params);
         if(array_key_exists($params['path'] , $this->routes[$requestType])) {
 
             return $this->callAction(
                 $params['model'],
                 $params['arguments'],
-                ...explode("@", $this->routes[$requestType][$params['path']])
+                explode("@", $this->routes[$requestType][$params['path']])[0],
+                $params['action']
             );
         }
 

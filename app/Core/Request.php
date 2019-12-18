@@ -7,32 +7,37 @@ class Request
 {
     private $requestType;
 
-    private function request($requestType, $urlArray)
+    private function request($urlArray)
     {
+        $request = [];
+        $action = $urlArray[1] ? $urlArray[1] : 'index';
 
-        if($requestType === 'GET' || $requestType === 'DELETE') {
-            if($requestType === 'GET') {
+        if($this->requestType === 'GET' || $this->requestType === 'DELETE') {
+            if($this->requestType === 'GET' && count($urlArray) < 2) {
                 array_splice( $urlArray, 1, 0, 'index');
             }
-            $_REQUEST = array_key_exists(2, $urlArray) ? ['id' => $urlArray[2]] : [];
-        }
-
-        if($requestType === 'PUT') {
-            parse_str(file_get_contents("php://input"), $_PUT);
-            $_REQUEST = $_PUT;
-
-            if ($urlArray[2] !== $_REQUEST['id']) {
-                throw new Exception('Id does not match.');
+            $request = array_key_exists(2, $urlArray) ? ['id' => $urlArray[2]] : [];
+            if($urlArray[1] === 'edit') {
+                $action = 'update';
+            }
+            if($urlArray[1] === 'create') {
+                $action = 'store';
             }
         }
 
-        if($requestType === 'POST') {
-            $_REQUEST = $_POST;
+        if($this->requestType === 'PUT') {
+            parse_str(file_get_contents("php://input"), $_PUT);
+            $request = $_PUT;
+
+        }
+
+        if($this->requestType === 'POST') {
+            $request = $_POST;
         }
 
         $model = $urlArray[0];
         $path = "$urlArray[0]/$urlArray[1]";
-        return ['path' => $path, 'arguments' => $_REQUEST, 'model' => $model];
+        return ['path' => $path, 'arguments' => $request, 'model' => $model, 'action'=>$action];
     }
 
     public function uri()
@@ -41,8 +46,7 @@ class Request
         $uri = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
         $urlArray = explode('/', $uri);
 
-       return $this->request($this->requestType, $urlArray);
-
+       return $this->request($urlArray);
     }
 
     public function method()

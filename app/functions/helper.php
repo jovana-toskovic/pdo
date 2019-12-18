@@ -1,5 +1,5 @@
 <?php
-function view(string $file, array $params=[])
+function view(string $file, $params=null)
 {
     return require_once BASIC_PATH . "/views/{$file}.php";
 }
