@@ -6,29 +6,40 @@
         </style>
     </head>
     <body>
-        <div class="flex column center middle  blue"">
-            <form action="http://pdo.test/posts/edit" method="PUT">
-                <div class="flex grow" >
-                    <label>Author: </label>
+        <?php require_once BASIC_PATH . '/views/partials/nav.php'; ?>
+        <div class="flex center middle">
+            <form
+                action="http://pdo.test/posts/create"
+                method="POST"
+                class="post-form flex flex-column grow stretch"
+            >
+                <div class="flex flex-column form-group" >
+                    <label class="text">Author: </label>
                     <input
-                        class="flex"
-                        autofocus type="text" name="author" required />
+                            class="flex grow input-field text"
+                            autofocus type="text" name="author" required
+                    />
                 </div>
 
-                <div class="flex grow">
-                    <label>Title: </label>
+                <div class="flex flex-column form-group">
+                    <label class="input-label text">Title: </label>
                     <input
-                        class="flex"
-                        autofocus type="text" name="author" required />
+                            class="flex grow input-field text"
+                            autofocus type="text" name="title" required
+                    />
                 </div>
 
-                <div class="flex grow">
-                    <label>Body: </label>
+                <div class="flex flex-column form-group">
+                    <label class="input-label text">Body: </label>
                     <input
-                        class="flex"
-                        autofocus type="text" name="author" required />
+                            class="flex grow input-field text"
+                            autofocus type="text" name="body" required
+                    />
                 </div>
 
+                <div class="flex flex-column form-group self-end">
+                    <input type="submit" class="btn-submit" value="Create"/>
+                </div>
             </form>
         </div>
 

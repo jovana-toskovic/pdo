@@ -2,18 +2,18 @@
     <html>
         <head>
             <style>
-                <?php require_once BASIC_PATH . "public/css/style.css"; ?>
+                <?php require BASIC_PATH . "public/css/style.css"; ?>
             </style>
         </head>
         <body>
+            <?php require BASIC_PATH . 'views/partials/nav.php'; ?>
+
             <?php foreach ($params as $post) : ?>
 
-                <div class="flex baseline">
-                    <div></div>
+                <a href='<?php echo URL_PATH . "posts/edit/$post->id" ?>' class="flex baseline link-text text">
                     <p><b><?php echo htmlspecialchars($post->author) . ": " ; ?></b></p>
                     <p><?php echo htmlspecialchars($post->body); ?></p>
-                    <p><?php echo htmlspecialchars($post->id); ?></p>
-                </div>
+                </a>
 
             <?php endforeach; ?>
         </body>

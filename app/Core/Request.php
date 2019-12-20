@@ -10,12 +10,16 @@ class Request
     private function request($urlArray)
     {
         $request = [];
-        $action = $urlArray[1] ? $urlArray[1] : 'index';
+        $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
         if($this->requestType === 'GET' || $this->requestType === 'DELETE') {
-            if($this->requestType === 'GET' && count($urlArray) < 2) {
-                array_splice( $urlArray, 1, 0, 'index');
+            array_splice($urlArray, 1, 0, 'index');
+
+            if(array_key_exists(2, $urlArray) && ($urlArray[2] === 'edit' || $urlArray[2] === 'create')) {
+                unset($urlArray[1]);
+                $urlArray = array_values($urlArray);
             }
+            $action = $urlArray[1];
             $request = array_key_exists(2, $urlArray) ? ['id' => $urlArray[2]] : [];
             if($urlArray[1] === 'edit') {
                 $action = 'update';
@@ -23,20 +27,25 @@ class Request
             if($urlArray[1] === 'create') {
                 $action = 'store';
             }
-        }
-
-        if($this->requestType === 'PUT') {
-            parse_str(file_get_contents("php://input"), $_PUT);
-            $request = $_PUT;
 
         }
 
         if($this->requestType === 'POST') {
             $request = $_POST;
+            if (array_key_exists('_METHOD', $request) && $request['_METHOD'] === 'PUT'){
+                $this->requestType = 'PUT';
+            }
+        }
+
+        if($this->requestType === 'PUT') {
+            parse_str(file_get_contents("php://input"), $_PUT);
+            $request = $_PUT;
+            unset($request['_METHOD']);
         }
 
         $model = $urlArray[0];
         $path = "$urlArray[0]/$urlArray[1]";
+
         return ['path' => $path, 'arguments' => $request, 'model' => $model, 'action'=>$action];
     }
 

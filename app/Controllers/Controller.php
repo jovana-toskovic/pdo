@@ -30,19 +30,16 @@ class Controller
     public function edit($arg)
     {
         $condition = ['id' => $arg['id']];
-        if (!empty($arg)) {
-            $this->db->table($this->model)->where($condition)->update($arg);
-            $this->index($condition);
-        }
+        $id = $condition['id'];
+        $this->db->table($this->model)->where($condition)->update($arg);
+        $this->redirect("posts/$id");
 
     }
 
     public function update($arg)
     {
         $post =  $this->db->table($this->model)->where($arg)->get();
-        var_dump($post[0]->author);
         view('posts.edit.view', $post[0]);
-
     }
 
     public function store($arg=[])
@@ -53,13 +50,18 @@ class Controller
     public function create($arg) {
         if (!empty($arg)) {
             $this->db->table($this->model)->insert($arg);
-            $this->index();
+            $this->redirect('posts');
         }
     }
 
     public function delete($arg) {
         $this->db->table($this->model)->where($arg)->delete();
-        $this->index();
+        $this->redirect('posts');
+    }
+
+
+    function redirect($url){
+        header("Location: " . URL_PATH . $url);
     }
 
 }
