@@ -13,9 +13,15 @@ class Request
         $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
         if($this->requestType === 'GET' || $this->requestType === 'DELETE') {
+            if($urlArray[0] === '') {
+                $urlArray[0] = 'home';
+            }
             array_splice($urlArray, 1, 0, 'index');
-
-            if(array_key_exists(2, $urlArray) && ($urlArray[2] === 'edit' || $urlArray[2] === 'create')) {
+            if(array_key_exists(2, $urlArray)
+                && ($urlArray[2] === 'edit'
+                    || $urlArray[2] === 'create'
+                    || $urlArray[2] === 'delete'
+                )) {
                 unset($urlArray[1]);
                 $urlArray = array_values($urlArray);
             }
@@ -27,7 +33,6 @@ class Request
             if($urlArray[1] === 'create') {
                 $action = 'store';
             }
-
         }
 
         if($this->requestType === 'POST') {
@@ -43,10 +48,9 @@ class Request
             unset($request['_METHOD']);
         }
 
-        $model = $urlArray[0];
         $path = "$urlArray[0]/$urlArray[1]";
 
-        return ['path' => $path, 'arguments' => $request, 'model' => $model, 'action'=>$action];
+        return ['path' => $path, 'arguments' => $request, 'action'=>$action];
     }
 
     public function uri()

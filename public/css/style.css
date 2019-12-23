@@ -89,8 +89,30 @@
     border-radius: .25rem;
 }
 
+.icon {
+    margin: 5px;
+}
+
 .link-text {
     text-decoration: none;
+}
+.nav-text {
+    list-style-type: none;
+}
 
+.nav-link {
+    padding: 16px;
+}
+
+.nav-link:hover {
+    background-color: #66becc;
+}
+
+.primary-background {
+    background-color: #17a2b8;
+}
+
+.white {
+    color: white;
 }
 

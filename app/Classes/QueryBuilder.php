@@ -119,7 +119,7 @@ class QueryBuilder
             }
             die();
         }
-        echo $sql;
+//        echo $sql;
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($array);
         return $stmt;

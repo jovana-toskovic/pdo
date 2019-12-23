@@ -1,10 +1,13 @@
-<div>
-    <ul>
-        <li>
-            <a href="<?php echo URL_PATH ?>posts" >Posts</a>
+<div class="flex primary-background">
+    <ul class="flex grow nav-text">
+        <li class="primary-background nav-link">
+            <a class="link-text white" href="<?php echo URL_PATH ?>" >Home</a>
         </li>
-        <li>
-            <a href="<?php echo URL_PATH ?>posts/create" >Create</a>
+        <li class="primary-background nav-link">
+            <a class="link-text white" href="<?php echo URL_PATH ?>posts" >Posts</a>
+        </li>
+        <li class="primary-background nav-link">
+            <a class="link-text white" href="<?php echo URL_PATH ?>users/users" >Users</a>
         </li>
     </ul>
 </div>
