@@ -8,7 +8,7 @@ class User implements ModelInterface
     public $id;
     public $username, $password, $email;
     private $columnNames = Array("id", "username", "password", "email");
-    public $table = 'user';
+    public $table = 'users';
 
     public function getTableName(): string
     {

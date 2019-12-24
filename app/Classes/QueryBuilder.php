@@ -24,6 +24,9 @@ class QueryBuilder
 
     private $numberOfWhere;
 
+    private $secondModel;
+    private $secondTable;
+
     public function __construct($connection, Validator $validator)
     {
         $this->connection = $connection;
@@ -73,6 +76,14 @@ class QueryBuilder
         $this->model = $model;
         $this->table = $model->getTableName();
         return $this;
+    }
+
+    public function join(ModelInterface $model, ModelInterface $secondModel): self
+    {
+        $this->secondModel = $secondModel;
+        $this->secondTable = $secondModel->getTableName();
+        $this->table($model);
+
     }
 
     // set logical operator

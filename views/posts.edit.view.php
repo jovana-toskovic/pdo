@@ -44,6 +44,10 @@
                     <input type="hidden" name="id"
                            value="<?php echo htmlspecialchars($params->id); ?>"
                     />
+
+                    <input type="hidden" name="id"
+                           value="<?php echo htmlspecialchars($params->user_id); ?>"
+                    />
                     <input type="hidden" name="_METHOD" value="PUT"/>
                     <div class="flex flex-column form-group self-end">
                         <input type="submit" class="btn-submit" value="Edit"/>
