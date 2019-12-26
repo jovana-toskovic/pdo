@@ -15,12 +15,7 @@
                     class="post-form flex flex-column grow stretch"
                 >
                     <div class="flex flex-column form-group" >
-                        <label class="text">Author: </label>
-                        <input
-                            class="flex grow input-field text"
-                            value="<?php echo htmlspecialchars($params->author); ?>"
-                            autofocus type="text" name="author" required
-                        />
+                        <p class="text">Author: <?php echo htmlspecialchars($params->username); ?></p>
                     </div>
 
                     <div class="flex flex-column form-group">
@@ -45,7 +40,7 @@
                            value="<?php echo htmlspecialchars($params->id); ?>"
                     />
 
-                    <input type="hidden" name="id"
+                    <input type="hidden" name="user_id"
                            value="<?php echo htmlspecialchars($params->user_id); ?>"
                     />
                     <input type="hidden" name="_METHOD" value="PUT"/>

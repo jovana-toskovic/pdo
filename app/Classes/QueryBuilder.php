@@ -24,8 +24,9 @@ class QueryBuilder
 
     private $numberOfWhere;
 
-    private $secondModel;
-    private $secondTable;
+    private $secondModel = "";
+    private $selected = "*";
+    private $what;
 
     public function __construct($connection, Validator $validator)
     {
@@ -52,6 +53,10 @@ class QueryBuilder
         $this->values = [];
         $this->numberOfWhere = 0;
         $this->error = false;
+        $this->model = "";
+        $this->secondModel = "";
+        $this->selected = "*";
+        $this->what;
     }
 
     //set fetch mode
@@ -78,12 +83,18 @@ class QueryBuilder
         return $this;
     }
 
-    public function join(ModelInterface $model, ModelInterface $secondModel): self
+    public function join(ModelInterface $model, $secondModel, $what): self
     {
         $this->secondModel = $secondModel;
-        $this->secondTable = $secondModel->getTableName();
-        $this->table($model);
+        $this->what = $what;
+        return $this->table($model);
 
+    }
+
+    public function select($arg)
+    {
+       $this->selected = implode(", ", $arg);
+    return $this;
     }
 
     // set logical operator
@@ -130,7 +141,7 @@ class QueryBuilder
             }
             die();
         }
-//        echo $sql;
+        echo $sql;
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($array);
         return $stmt;
@@ -139,9 +150,14 @@ class QueryBuilder
      //select all
     public function getAll(): array
     {
-        $sql = "SELECT * FROM $this->table;";
+        $sql = "SELECT $this->selected FROM $this->table";
+        if ($this->secondModel !== '') {
+            $sql = $sql . " INNER JOIN $this->secondModel ON posts.user_id = users.id";
+        }
+    echo $sql;
         $stmt = $this->prepareQuery($sql);
         $this->fetchMode($stmt, 'CLASS');
+        $this->unset();
         return $stmt->fetchAll();
     }
 
@@ -152,7 +168,6 @@ class QueryBuilder
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
-
         return $stmt->fetchAll();
     }
 

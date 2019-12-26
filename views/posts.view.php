@@ -9,17 +9,27 @@
 
             <?php foreach ($params as $post) : ?>
                 <div class="flex">
-                    <p><b><?php echo htmlspecialchars($post->author) . ": " ; ?></b></p>
+                    <p><b><?php echo htmlspecialchars($post->username) . ": " ; ?></b></p>
                     <p><?php echo htmlspecialchars($post->body); ?></p>
-                    <div class="flex">
-                        <a href='<?php echo URL_PATH . "posts/edit/$post->id" ?>' class="icon link-text text">
-                            edit
-                        </a>
 
-                        <a href='<?php echo URL_PATH . "posts/delete/$post->id" ?>' class="icon link-text text" >
-                            X
-                        </a>
-                    </div>
+                    <?php
+
+                        if($_SESSION['id'] === $post->user_id) {
+
+                            echo "
+                            <div class='flex'>
+                                <a href=" . URL_PATH . "posts/edit/$post->id" . " class='icon link-text text'>
+                                    edit
+                                </a>
+        
+                                <a href=" . URL_PATH . "posts/delete/$post->id" . "class='icon link-text text' >
+                                    X
+                                </a>
+                            </div>";
+                        }
+
+
+                    ?>
                 </div>
             <?php endforeach; ?>
 

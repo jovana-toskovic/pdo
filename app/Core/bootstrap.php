@@ -6,6 +6,7 @@ use App\Classes\Validation\Validator;
 use App\Core\Router;
 use App\Core\DB;
 
+
 define('BASIC_PATH', __DIR__ . '/../../');
 define('URL_PATH', 'http://pdo.test/');
 

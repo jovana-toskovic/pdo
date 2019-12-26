@@ -14,28 +14,28 @@
                 class="post-form flex flex-column grow stretch"
             >
                 <div class="flex flex-column form-group" >
-                    <label class="text">Author: </label>
-                    <input
-                            class="flex grow input-field text"
-                            autofocus type="text" name="author" required
-                    />
+                    <p class="text">Author: <?php echo $params; ?></php>
                 </div>
 
                 <div class="flex flex-column form-group">
                     <label class="input-label text">Title: </label>
                     <input
-                            class="flex grow input-field text"
-                            autofocus type="text" name="title" required
+                        class="flex grow input-field text"
+                        autofocus type="text" name="title" required
                     />
                 </div>
 
                 <div class="flex flex-column form-group">
                     <label class="input-label text">Body: </label>
                     <input
-                            class="flex grow input-field text"
-                            autofocus type="text" name="body" required
+                        class="flex grow input-field text"
+                        autofocus type="text" name="body" required
                     />
                 </div>
+
+                <input type="hidden" name="user_id"
+                       value="<?php echo htmlspecialchars($_SESSION['id']); ?>"
+                />
 
                 <div class="flex flex-column form-group self-end">
                     <input type="submit" class="btn-submit" value="Create"/>

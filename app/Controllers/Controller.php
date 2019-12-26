@@ -17,16 +17,6 @@ class Controller
 
     public function index($arg=[])
     {
-//        DB::table('users')
-//            ->join('posts', 'users.id', '=', 'posts.user_id')
-//            ->select('users.*', 'posts.title', 'orders.created_at')
-//            ->get();
-
-        //        DB::table('users')
-//            ->join($this->model, $this->userModel, user_id )
-//            ->select([['*'], ['username']])
-//            ->get();
-        //Db::table('users')->all();
         if (!empty($arg)) {
             return $this->db->table($this->model)->where($arg)->get();
         } else {
