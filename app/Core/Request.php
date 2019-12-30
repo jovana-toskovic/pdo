@@ -9,6 +9,7 @@ class Request
 
     private function request($urlArray)
     {
+        print_r($urlArray);
         $request = [];
         $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
@@ -21,6 +22,7 @@ class Request
                 && ($urlArray[2] === 'edit'
                     || $urlArray[2] === 'create'
                     || $urlArray[2] === 'delete'
+                    || $urlArray[2] === 'register'
                 )) {
                 unset($urlArray[1]);
                 $urlArray = array_values($urlArray);

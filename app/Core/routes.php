@@ -14,8 +14,10 @@ $router->delete("posts/delete", "App\Controllers\PostController@delete");
 // USERS
 $router->get("users/index", "App\Controllers\UserController@index");
 $router->get("users/edit", "App\Controllers\UserController@edit");
-$router->get("users/create", "App\Controllers\UserController@create");
+$router->get("register/index", "App\Controllers\RegistrationController@index");
+$router->get("login/index", "App\Controllers\LoginController@index");
 
 $router->put("users/edit", "App\Controllers\UserController@edit");
-$router->post("users/create", "App\Controllers\UserController@create");
+$router->post("register/create", "App\Controllers\RegistrationController@create");
+$router->post("login/create", "App\Controllers\LoginController@create");
 $router->delete("users/delete", "App\Controllers\UserController@delete");

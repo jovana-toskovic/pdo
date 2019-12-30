@@ -154,7 +154,7 @@ class QueryBuilder
         if ($this->secondModel !== '') {
             $sql = $sql . " INNER JOIN $this->secondModel ON posts.user_id = users.id";
         }
-    echo $sql;
+        echo $sql;
         $stmt = $this->prepareQuery($sql);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
@@ -164,7 +164,7 @@ class QueryBuilder
     //select
     public function get(): array
     {
-        $sql = "SELECT * FROM $this->table WHERE $this->sql;";
+        $sql = "SELECT $this->selected FROM $this->table WHERE $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();

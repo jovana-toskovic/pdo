@@ -31,16 +31,18 @@ class PostController extends Controller
 
     public function edit($arg)
     {
-        $id = parent::edit($arg);
+        $condition = ['id' => $arg['id']];
+        $id = $condition['id'];
+        $this->db->table($this->model)->where($condition)->update($arg);
         $this->redirect("posts/$id");
-
     }
 
     public function update($arg)
     {
         $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
             ->select(['users.username AS username', 'posts.body', 'posts.title', 'posts.user_id AS user_id'])
-            ->where(["posts.user_id" => 'users.id'])->getAll();
+            ->where(["posts.user_id" => 'users.id'])
+            ->getAll();
         $post = $posts[0];
         if ($post->user_id === $_SESSION['id']) {
             view('posts.edit.view', $post);
@@ -48,7 +50,6 @@ class PostController extends Controller
             $error = "You cant edit this post.";
             view('error.view', $error);
         }
-
     }
 
     public function store($arg=[])
@@ -61,12 +62,12 @@ class PostController extends Controller
     }
 
     public function create($arg) {
-        parent::create($arg);
+        $this->db->table($this->model)->insert($arg);
         $this->redirect('posts');
     }
 
     public function delete($arg) {
-        parent::delete($arg);
+        $this->db->table($this->model)->where($arg)->delete();
         $this->redirect('posts');
     }
 

@@ -14,7 +14,7 @@
 
                     <?php
 
-                        if($_SESSION['id'] === $post->user_id) {
+                        if(isset($_SESSION) && $_SESSION['id'] === $post->user_id) {
 
                             echo "
                             <div class='flex'>
@@ -27,8 +27,6 @@
                                 </a>
                             </div>";
                         }
-
-
                     ?>
                 </div>
             <?php endforeach; ?>

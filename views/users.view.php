@@ -25,7 +25,7 @@
     </div>
 <?php endforeach; ?>
 
-<a href='<?php echo URL_PATH . "users/create" ?>' class="icon link-text text">
+<a href='<?php echo URL_PATH . "users/register" ?>' class="icon link-text text">
     Dont have account? Click here to register.
 </a>
 </body>

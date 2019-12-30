@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 function view(string $file, $params=null)
 {

@@ -14,38 +14,37 @@ class UserController extends Controller
 
     public function index($arg=[])
     {
-        $posts = parent::index($arg=[]);
+        $posts;
+        if (!empty($arg)) {
+            $posts = $this->db->table($this->model)->where($arg)->get();
+        } else {
+            $posts = $this->db->table($this->model)->getAll();
+        }
         view('users.view', $posts);
     }
 
     public function edit($arg)
     {
         $arg['password'] = password_hash($arg['password'], PASSWORD_DEFAULT);
-        $id = parent::edit($arg);
+        $condition = ['id' => $arg['id']];
+        $id = $condition['id'];
+        $this->db->table($this->model)->where($condition)->update($arg);
         $this->redirect("users/$id");
     }
 
     public function update($arg)
     {
-        $users = parent::update($arg);
+        $users = $this->db->table($this->model)->where($arg)->get();
         view('users.edit.view', $users[0]);
     }
 
-    public function store($arg=[])
+    public function create($arg)
     {
-        view('users.create.view');
-    }
-
-    public function create($arg) {
-
-        $arg['password'] = password_hash($arg['password'], PASSWORD_DEFAULT);
-
-        parent::create($arg);
-        $this->redirect('users');
+        $this->db->table($this->model)->insert($arg);
     }
 
     public function delete($arg) {
-        parent::delete($arg);
+        $this->db->table($this->model)->where($arg)->delete();
         $this->redirect('users');
     }
 }

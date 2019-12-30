@@ -34,6 +34,8 @@ class Router
 
     public function direct($params, $requestType)
     {
+        var_dump($params);
+        var_dump($requestType);
         if(array_key_exists($params['path'] , $this->routes[$requestType])) {
 
             return $this->callAction(
@@ -48,6 +50,7 @@ class Router
 
     protected function callAction($arguments, $controller, $action)
     {
+        echo $controller;
         if(!method_exists($controller, $action)) {
             throw new Exception(
                 "$controller does not respond to the $action action."
