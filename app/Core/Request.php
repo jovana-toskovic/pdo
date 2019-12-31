@@ -13,32 +13,26 @@ class Request
         $request = [];
         $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
-        if($this->requestType === 'GET' || $this->requestType === 'DELETE') {
-            if($urlArray[0] === '') {
-                $urlArray[0] = 'home';
+        if($this->requestType === 'GET') {
+            if(array_key_exists(1, $urlArray) && is_numeric($urlArray[1])) {
+                echo $urlArray[1];
+                $action = 'show';
+                $request = ['id' => $urlArray[1]];
+                $urlArray[1] = 'id';
+                if (array_key_exists(2, $urlArray)) {
+                    $action = 'edit';
+                }
             }
-            array_splice($urlArray, 1, 0, 'index');
-            if(array_key_exists(2, $urlArray)
-                && ($urlArray[2] === 'edit'
-                    || $urlArray[2] === 'create'
-                    || $urlArray[2] === 'delete'
-                    || $urlArray[2] === 'register'
-                )) {
-                unset($urlArray[1]);
-                $urlArray = array_values($urlArray);
-            }
-            $action = $urlArray[1];
-            $request = array_key_exists(2, $urlArray) ? ['id' => $urlArray[2]] : [];
-            if($urlArray[1] === 'edit') {
-                $action = 'update';
-            }
-            if($urlArray[1] === 'create') {
-                $action = 'store';
-            }
+        }
+
+        if ($this->requestType === 'DELETE') {
+            $action = 'destroy';
+            $request = ['id' => $urlArray[1]];
         }
 
         if($this->requestType === 'POST') {
             $request = $_POST;
+            $action = "store";
             if (array_key_exists('_METHOD', $request) && $request['_METHOD'] === 'PUT'){
                 $this->requestType = 'PUT';
             }
@@ -47,10 +41,24 @@ class Request
         if($this->requestType === 'PUT') {
             parse_str(file_get_contents("php://input"), $_PUT);
             $request = $_PUT;
+            $action = 'update';
+            $urlArray[1] = 'id';
             unset($request['_METHOD']);
         }
 
-        $path = "$urlArray[0]/$urlArray[1]";
+
+        $path = $urlArray[0];
+        if (array_key_exists(1, $urlArray)){
+            $path = "$urlArray[0]/$urlArray[1]";
+        }
+        if (array_key_exists(2, $urlArray)){
+            $path = "$urlArray[0]/$urlArray[1]/$urlArray[2]";
+        }
+
+
+            echo $path;
+            print_r($request);
+            echo $action;
 
         return ['path' => $path, 'arguments' => $request, 'action'=>$action];
     }

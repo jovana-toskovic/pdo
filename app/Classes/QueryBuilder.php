@@ -123,7 +123,9 @@ class QueryBuilder
             $this->sql .= "$queryOperator " . " " . $key . " $operator ?";
             array_push($this->values, $value);
         }
-
+        if(!strpos($this->sql, 'WHERE')){
+            $this->sql = 'WHERE' . $this->sql;
+        }
         return $this;
     }
 
@@ -152,10 +154,10 @@ class QueryBuilder
     {
         $sql = "SELECT $this->selected FROM $this->table";
         if ($this->secondModel !== '') {
-            $sql = $sql . " INNER JOIN $this->secondModel ON posts.user_id = users.id";
+            $sql = $sql . " INNER JOIN $this->secondModel ON posts.user_id = users.id $this->sql";
         }
         echo $sql;
-        $stmt = $this->prepareQuery($sql);
+        $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
         return $stmt->fetchAll();
@@ -164,7 +166,7 @@ class QueryBuilder
     //select
     public function get(): array
     {
-        $sql = "SELECT $this->selected FROM $this->table WHERE $this->sql;";
+        $sql = "SELECT $this->selected FROM $this->table $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
@@ -207,7 +209,7 @@ class QueryBuilder
         var_dump($columns);
         $this->values = array_merge($dataValues, $this->values);
 
-        $sql = "UPDATE $this->table SET $columns WHERE $this->sql";
+        $sql = "UPDATE $this->table SET $columns $this->sql";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->unset();
     }

@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Classes\Post;
 use App\Classes\User;
 use App\Controllers\Controller;
+use App\Classes\Session;
 
 class PostController extends Controller
 {
@@ -12,24 +13,30 @@ class PostController extends Controller
     public function __construct()
     {
         parent::__construct(new Post());
+
     }
 
     public function index($arg=[])
     {
-        $posts;
-        if (!empty($arg)) {
-            $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
-                ->select(['users.username AS username', 'posts.body', 'posts.title', 'posts.user_id AS user_id'])
-                ->where($arg)->getAll();
-        } else {
-            $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
-                ->select(['users.username AS username', 'posts.body', 'posts.user_id AS user_id'])
-                ->getAll();
-        }
+        $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
+            ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.user_id AS user_id'])
+            ->getAll();
         view('posts.view', $posts);
     }
 
-    public function edit($arg)
+    public function show($arg=[])
+    {
+        echo 'show is called';
+        $id = ['posts.id' => $arg['id']];
+        $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
+            ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.user_id AS user_id'])
+            ->where($id)->getAll();
+
+        print_r($posts);
+        view('posts.view', $posts);
+    }
+
+    public function update($arg)
     {
         $condition = ['id' => $arg['id']];
         $id = $condition['id'];
@@ -37,14 +44,16 @@ class PostController extends Controller
         $this->redirect("posts/$id");
     }
 
-    public function update($arg)
+    public function edit($arg)
     {
+        print_r($arg);
         $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
-            ->select(['users.username AS username', 'posts.body', 'posts.title', 'posts.user_id AS user_id'])
-            ->where(["posts.user_id" => 'users.id'])
+            ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.title', 'posts.user_id AS user_id'])
+            ->where(["posts.id" => $arg['id']])
             ->getAll();
         $post = $posts[0];
-        if ($post->user_id === $_SESSION['id']) {
+        var_dump($post);
+        if ($post->user_id === $this->session->getStoredValue('id')) {
             view('posts.edit.view', $post);
         } else {
             $error = "You cant edit this post.";
@@ -52,7 +61,7 @@ class PostController extends Controller
         }
     }
 
-    public function store($arg=[])
+    public function create($arg=[])
     {
         $users = $this->db->table(new User())->where(['id' => $_SESSION['id']])->get();
 
@@ -61,12 +70,12 @@ class PostController extends Controller
         view('posts.create.view', $username);
     }
 
-    public function create($arg) {
+    public function store($arg) {
         $this->db->table($this->model)->insert($arg);
         $this->redirect('posts');
     }
 
-    public function delete($arg) {
+    public function destroy($arg) {
         $this->db->table($this->model)->where($arg)->delete();
         $this->redirect('posts');
     }

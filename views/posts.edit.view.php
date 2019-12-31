@@ -10,7 +10,7 @@
 
             <div class="flex center middle">
                 <form
-                    action="http://pdo.test/posts/edit"
+                    action="<?php echo URL_PATH . "posts/" . htmlspecialchars($params->id); ?>"
                     method="POST"
                     class="post-form flex flex-column grow stretch"
                 >

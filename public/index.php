@@ -8,3 +8,4 @@ use App\Core\Request;
 $url =  new Request();
 $router->direct($url->uri(), $url->method());
 
+

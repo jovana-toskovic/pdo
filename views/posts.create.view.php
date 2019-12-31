@@ -9,12 +9,12 @@
         <?php require_once BASIC_PATH . '/views/partials/nav.php'; ?>
         <div class="flex center middle">
             <form
-                action="http://pdo.test/posts/create"
+                action="http://pdo.test/posts"
                 method="POST"
                 class="post-form flex flex-column grow stretch"
             >
                 <div class="flex flex-column form-group" >
-                    <p class="text">Author: <?php echo $params; ?></php>
+                    <p class="text">Author: <?php echo $params->username; ?></php>
                 </div>
 
                 <div class="flex flex-column form-group">
