@@ -14,11 +14,11 @@
             <p><b>E-mail:</b> <?php echo htmlspecialchars($user->email); ?></p>
         </div>
         <div class="flex">
-            <a href='<?php echo URL_PATH . "users/edit/$user->id" ?>' class="icon link-text text">
+            <a href='<?php echo URL_PATH . "users/$user->id/edit" ?>' class="icon link-text text">
                 edit account
             </a>
 
-            <a href='<?php echo URL_PATH . "users/delete/$user->id" ?>' class="icon link-text text" >
+            <a href='<?php echo URL_PATH . "users/$user->id" ?>' class="icon link-text text" >
                 delete account
             </a>
         </div>

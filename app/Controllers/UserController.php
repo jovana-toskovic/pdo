@@ -14,16 +14,18 @@ class UserController extends Controller
 
     public function index($arg=[])
     {
-        $posts;
-        if (!empty($arg)) {
-            $posts = $this->db->table($this->model)->where($arg)->get();
-        } else {
-            $posts = $this->db->table($this->model)->getAll();
-        }
+
+        $posts = $this->db->table($this->model)->getAll();
         view('users.view', $posts);
     }
 
-    public function edit($arg)
+    public function show($arg)
+    {
+        $posts = $this->db->table($this->model)->where($arg)->get();
+        view('users.view', $posts);
+    }
+
+    public function update($arg)
     {
         $arg['password'] = password_hash($arg['password'], PASSWORD_DEFAULT);
         $condition = ['id' => $arg['id']];
@@ -32,18 +34,18 @@ class UserController extends Controller
         $this->redirect("users/$id");
     }
 
-    public function update($arg)
+    public function edit($arg)
     {
         $users = $this->db->table($this->model)->where($arg)->get();
         view('users.edit.view', $users[0]);
     }
 
-    public function create($arg)
+    public function store($arg)
     {
         $this->db->table($this->model)->insert($arg);
     }
 
-    public function delete($arg) {
+    public function destroy($arg) {
         $this->db->table($this->model)->where($arg)->delete();
         $this->redirect('users');
     }

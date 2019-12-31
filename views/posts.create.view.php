@@ -14,7 +14,7 @@
                 class="post-form flex flex-column grow stretch"
             >
                 <div class="flex flex-column form-group" >
-                    <p class="text">Author: <?php echo $params->username; ?></php>
+                    <p class="text">Author: <?php echo $params; ?></php>
                 </div>
 
                 <div class="flex flex-column form-group">
