@@ -27,6 +27,8 @@ class LoginController extends Controller
 
     public function logout()
     {
+
+        echo "logout";
         
     }
 }

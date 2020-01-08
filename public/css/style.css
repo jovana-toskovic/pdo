@@ -89,6 +89,12 @@
     border-radius: .25rem;
 }
 
+.btn-transparent {
+    background-color: transparent;
+    border-color: transparent;
+    box-shadow: none;
+}
+
 .icon {
     margin: 5px;
 }

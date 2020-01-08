@@ -14,14 +14,19 @@ class UserController extends Controller
 
     public function index($arg=[])
     {
-
-        $posts = $this->db->table($this->model)->getAll();
+        $posts = $this->db
+            ->table($this->model)
+            ->select(['*'])
+            ->getAll();
         view('users.view', $posts);
     }
 
     public function show($arg)
     {
-        $posts = $this->db->table($this->model)->where($arg)->get();
+        $posts = $this->db
+            ->table($this->model)
+            ->select(['*'])
+            ->where($arg)->get();
         view('users.view', $posts);
     }
 
@@ -36,8 +41,12 @@ class UserController extends Controller
 
     public function edit($arg)
     {
-        $users = $this->db->table($this->model)->where($arg)->get();
-        view('users.edit.view', $users[0]);
+        list($user) = $this->db
+            ->table($this->model)
+            ->select(['*'])
+            ->where($arg)
+            ->get();
+        view('users.edit.view', $user);
     }
 
     public function store($arg)
@@ -46,7 +55,10 @@ class UserController extends Controller
     }
 
     public function destroy($arg) {
-        $this->db->table($this->model)->where($arg)->delete();
+        $this->db
+            ->table($this->model)
+            ->where($arg)
+            ->delete();
         $this->redirect('users');
     }
 }

@@ -18,7 +18,8 @@ class PostController extends Controller
 
     public function index($arg=[])
     {
-        $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
+        $posts = $this->db
+            ->join($this->model, 'users', 'posts.user_id' )
             ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.user_id AS user_id'])
             ->getAll();
         view('posts.view', $posts);
@@ -28,9 +29,11 @@ class PostController extends Controller
     {
         echo 'show is called';
         $id = ['posts.id' => $arg['id']];
-        $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
+        $posts = $this->db
+            ->join($this->model, 'users', 'posts.user_id' )
             ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.user_id AS user_id'])
-            ->where($id)->getAll();
+            ->where($id)
+            ->getAll();
 
         print_r($posts);
         view('posts.view', $posts);
@@ -47,13 +50,13 @@ class PostController extends Controller
     public function edit($arg)
     {
         print_r($arg);
-        $posts = $this->db->join($this->model, 'users', 'posts.user_id' )
+        $posts = $this->db
+            ->join($this->model, 'users', 'posts.user_id' )
             ->select(['users.username AS username', 'posts.body', 'posts.id AS id', 'posts.title', 'posts.user_id AS user_id'])
             ->where(["posts.id" => $arg['id']])
             ->getAll();
         $post = $posts[0];
-        var_dump($post);
-        if ($post->user_id === $this->session->getStoredValue('id')) {
+        if(!empty($post) && $post->user_id === $this->session->getStoredValue('id')) {
             view('posts.edit.view', $post);
         } else {
             $error = "You cant edit this post.";
@@ -63,10 +66,12 @@ class PostController extends Controller
 
     public function create($arg=[])
     {
-        $users = $this->db->table(new User())->where(['id' => $_SESSION['id']])->get();
-
+        $users = $this->db
+            ->table(new User())
+            ->select(['*'])
+            ->where(['id' => $_SESSION['id']])
+            ->get();
         $username = $users[0]->username;
-        echo $username;
         view('posts.create.view', $username);
     }
 
@@ -76,7 +81,10 @@ class PostController extends Controller
     }
 
     public function destroy($arg) {
-        $this->db->table($this->model)->where($arg)->delete();
+        $this->db
+            ->table($this->model)
+            ->where($arg)
+            ->delete();
         $this->redirect('posts');
     }
 

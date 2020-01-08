@@ -8,29 +8,32 @@
             <?php require BASIC_PATH . 'views/partials/nav.php'; ?>
 
             <?php foreach ($params as $post) : ?>
-                <a href='<?php echo URL_PATH . "posts/$post->id"; ?>' class='icon link-text text'>
-                    <div class="flex">
-                        <p><b><?php echo htmlspecialchars($post->username) . ": " ; ?></b></p>
-                        <p><?php echo htmlspecialchars($post->body); ?></p>
+                <div class="flex">
+                    <p><b><?php echo htmlspecialchars($post->username) . ": " ; ?></b></p>
+                    <p><?php echo htmlspecialchars($post->body); ?></p>
 
-                        <?php
-                        echo $post->id;
-                            if(isset($_SESSION) && $_SESSION['id'] === $post->user_id) {
+                    <?php
+                        if(isset($_SESSION) && $_SESSION['id'] === $post->user_id) {
+                    ?>
+                        <div class="flex">
+                            <a href='<?php echo URL_PATH . "posts/$post->id/edit" ?>' class="icon link-text text">
+                                edit
+                            </a>
 
-                                echo "
-                                <div class='flex'>
-                                    <a href=" . URL_PATH . "posts/$post->id/edit" . " class='icon link-text text'>
-                                        edit
-                                    </a>
-            
-                                    <a href=" . URL_PATH . "posts/$post->id" . "class='icon link-text text' >
-                                        X
-                                    </a>
-                                </div>";
-                            }
-                        ?>
-                    </div>
-                </a>
+                            <form
+                                action="<?php echo URL_PATH . "posts/" . htmlspecialchars($post->id); ?>"
+                                method="POST"
+                            >
+                                <input type="hidden" name="_METHOD" value="DELETE"/>
+                                <div class="flex flex-column form-group self-end">
+                                    <input type="submit" class="icon link-text text" value="X"/>
+                                </div>
+                            </form>
+                        </div>
+                    <?php
+                        }
+                    ?>
+                </div>
             <?php endforeach; ?>
 
             <a href='<?php echo URL_PATH . "posts/create" ?>' class="icon link-text text">

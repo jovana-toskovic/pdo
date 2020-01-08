@@ -83,17 +83,37 @@ class QueryBuilder
         return $this;
     }
 
-    public function join(ModelInterface $model, $secondModel, $what): self
+    //inner join
+    public function join(ModelInterface $model, $secondModel, $what, $type = "inner"): self
     {
         $this->secondModel = $secondModel;
         $this->what = $what;
+        //posts.user_id = users.id
+        $joinType = strtoupper($type);
+        $this->sql = " $joinType JOIN $this->secondModel ON $what = $secondModel.id";
         return $this->table($model);
+    }
 
+    //left join
+    public function leftJoin(ModelInterface $model, $secondModel, $what): self
+    {
+        return $this->join($model, $secondModel, $what, 'left');
+    }
+
+    //right join
+    public function rightJoin(ModelInterface $model, $secondModel, $what): self
+    {
+        return $this->join($model, $secondModel, $what, 'right');
     }
 
     public function select($arg)
     {
-       $this->selected = implode(", ", $arg);
+        //SELECT $this->selected FROM $this->table";
+        if(!empty($arg)) {
+            $this->selected = implode(", " , $arg);
+        }
+        $sql = $this->sql;
+       $this->sql = "SELECT $this->selected FROM $this->table " . $sql;
     return $this;
     }
 
@@ -107,6 +127,7 @@ class QueryBuilder
     // set condition
     public function where(array $where, string $logicalOperator=' &&'): self
     {
+        echo $this->sql;
         $operator = "=";
         if(!$this->isAssoc($where)){
             $operator =  $where[1];
@@ -116,16 +137,19 @@ class QueryBuilder
         }
 
         $this->validator->validate(array_merge($data, ["operator"=>$operator]), $this->model);
-
+        $whereSql = "";
         foreach ($data as $key=>$value){
-
             $queryOperator = $this->setLogicalOperator($logicalOperator);
-            $this->sql .= "$queryOperator " . " " . $key . " $operator ?";
+            $whereSql .= "$queryOperator " . " " . $key . " $operator ?";
             array_push($this->values, $value);
         }
-        if(!strpos($this->sql, 'WHERE')){
-            $this->sql = 'WHERE' . $this->sql;
+        if(!strpos($whereSql, 'WHERE')){
+            $whereSql = ' WHERE ' . $whereSql;
         }
+        $sql = $this->sql;
+
+        $this->sql = $sql . $whereSql;
+        echo $this->sql;
         return $this;
     }
 
@@ -152,12 +176,7 @@ class QueryBuilder
      //select all
     public function getAll(): array
     {
-        $sql = "SELECT $this->selected FROM $this->table";
-        if ($this->secondModel !== '') {
-            $sql = $sql . " INNER JOIN $this->secondModel ON posts.user_id = users.id $this->sql";
-        }
-        echo $sql;
-        $stmt = $this->prepareQuery($sql, $this->values);
+        $stmt = $this->prepareQuery($this->sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
         return $stmt->fetchAll();
@@ -166,8 +185,7 @@ class QueryBuilder
     //select
     public function get(): array
     {
-        $sql = "SELECT $this->selected FROM $this->table $this->sql";
-        $stmt = $this->prepareQuery($sql, $this->values);
+        $stmt = $this->prepareQuery($this->sql, $this->values);
         $this->fetchMode($stmt, 'CLASS');
         $this->unset();
         return $stmt->fetchAll();
@@ -217,7 +235,7 @@ class QueryBuilder
     //delete
     public function delete(): void
     {
-        $sql = "DELETE FROM $this->table WHERE $this->sql;";
+        $sql = "DELETE FROM $this->table $this->sql;";
         $stmt = $this->prepareQuery($sql, $this->values);
         $this->unset();
     }
