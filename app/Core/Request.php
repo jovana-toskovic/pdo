@@ -9,13 +9,13 @@ class Request
 
     private function request($urlArray)
     {
-        print_r($urlArray);
+        // print_r($urlArray);
         $request = [];
         $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
         if($this->requestType === 'GET') {
             if(array_key_exists(1, $urlArray) && is_numeric($urlArray[1])) {
-                echo $urlArray[1];
+                // echo $urlArray[1];
                 $action = 'show';
                 $request = ['id' => $urlArray[1]];
                 $urlArray[1] = 'id';
@@ -23,6 +23,11 @@ class Request
                     $action = 'edit';
                 }
             }
+
+            if(array_key_exists(0, $urlArray) && ($urlArray[0] === 'login' ||  $urlArray[0] === 'register')) {
+                $action = 'show' . ucfirst($urlArray[0]) . 'Form';
+            }
+
         }
 
         if ($this->requestType === 'DELETE') {
@@ -33,6 +38,13 @@ class Request
         if($this->requestType === 'POST') {
             $request = $_POST;
             $action = "store";
+            if (
+                $urlArray[0] === 'login' ||  
+                $urlArray[0] === 'register' ||
+                $urlArray[0] === 'logout'
+            ) {
+                $action = $urlArray[0];
+            }
             if (array_key_exists('_METHOD', $request) && $request['_METHOD'] === 'PUT'){
                 $this->requestType = 'PUT';
             }
@@ -46,7 +58,6 @@ class Request
             unset($request['_METHOD']);
         }
 
-
         $path = $urlArray[0];
         if (array_key_exists(1, $urlArray)){
             $path = "$urlArray[0]/$urlArray[1]";
@@ -55,10 +66,9 @@ class Request
             $path = "$urlArray[0]/$urlArray[1]/$urlArray[2]";
         }
 
-
-            echo $path;
-            print_r($request);
-            echo $action;
+            // echo $path;
+            // print_r($request);
+            // echo $action;
 
         return ['path' => $path, 'arguments' => $request, 'action'=>$action];
     }

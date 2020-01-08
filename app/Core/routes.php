@@ -1,6 +1,6 @@
 <?php
 // ROOT
-$router->get("home/index", "App\Controllers\HomeController@index");
+$router->get("home", "App\Controllers\HomeController@index");
 
 // POSTS
 $router->get("posts", "App\Controllers\PostController@index");
@@ -20,10 +20,12 @@ $router->get("users/id/edit", "App\Controllers\UserController@edit");
 $router->put("users/id", "App\Controllers\UserController@update");
 $router->delete("users/id", "App\Controllers\UserController@destroy");
 
-$router->get("register", "App\Controllers\RegistrationController@create");
-$router->get("login", "App\Controllers\LoginController@create");
+//AUTH
+$router->get("register", "App\Controllers\RegisterController@showRegisterForm");
+$router->get("login", "App\Controllers\LoginController@showLoginForm");
 
-$router->post("register", "App\Controllers\RegistrationController@store");
-$router->post("login", "App\Controllers\LoginController@store");
+$router->post("register", "App\Controllers\RegisterController@register");
+$router->post("login", "App\Controllers\LoginController@login");
+$router->post("logout", "App\Controllers\LoginController@logout");
 
 

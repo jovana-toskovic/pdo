@@ -9,7 +9,7 @@
 <?php require_once BASIC_PATH . '/views/partials/nav.php'; ?>
 <div class="flex center middle">
     <form
-        action="http://pdo.test/login/create"
+        action="http://pdo.test/login"
         method="POST"
         class="post-form flex flex-column grow stretch"
     >

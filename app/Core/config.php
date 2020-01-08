@@ -4,7 +4,7 @@ return [
     'database' => [
         'name' => 'pdo',
         'username' => 'root',
-        'password' => '43>RDaW5',
+        'password' => 'jovana1991',
         'connection' => 'mysql:host=localhost',
         'options' => []
     ]

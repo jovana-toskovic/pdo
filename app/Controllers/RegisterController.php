@@ -4,19 +4,19 @@ namespace App\Controllers;
 use App\Controllers\Controller;
 use App\Classes\User;
 
-class RegistrationController extends Controller
+class RegisterController extends Controller
 {
     public function __construct()
     {
         parent::__construct(new User());
     }
 
-    public function index($arg=[])
+    public function showRegisterForm($arg=[])
     {
         view('users.register.view');
     }
 
-    public function create($arg=[])
+    public function register($arg=[])
     {
         echo 'here';
         $arg['password'] = password_hash($arg['password'], PASSWORD_DEFAULT);
