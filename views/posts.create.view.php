@@ -14,7 +14,7 @@
                 class="post-form flex flex-column grow stretch"
             >
                 <div class="flex flex-column form-group" >
-                    <p class="text">Author: <?php echo $params; ?></php>
+                    <p class="text">Author: <?php echo $params->username; ?></php>
                 </div>
 
                 <div class="flex flex-column form-group">
@@ -34,7 +34,7 @@
                 </div>
 
                 <input type="hidden" name="user_id"
-                       value="<?php echo htmlspecialchars($_SESSION['id']); ?>"
+                       value="<?php echo $params->id; ?>"
                 />
 
                 <div class="flex flex-column form-group self-end">

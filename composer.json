@@ -2,7 +2,7 @@
     "autoload": {
         "psr-4": {"App\\": "app/"},
         "files": [
-            "app/functions/helper.php"
+            "app/functions/viewHelper.php"
         ]
     },
     "require": {

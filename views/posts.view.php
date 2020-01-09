@@ -13,7 +13,7 @@
                     <p><?php echo htmlspecialchars($post->body); ?></p>
 
                     <?php
-                        if(isset($_SESSION) && $_SESSION['id'] === $post->user_id) {
+                        if(isset($_SESSION) && isset($_SESSION['id']) && $_SESSION['id'] === $post->user_id) {
                     ?>
                         <div class="flex">
                             <a href='<?php echo URL_PATH . "posts/$post->id/edit" ?>' class="icon link-text text">

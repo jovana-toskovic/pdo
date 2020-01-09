@@ -27,7 +27,7 @@
             <label class="input-label text">Password: </label>
             <input
                 class="flex grow input-field text"
-                autofocus type="text" name="password" required
+                autofocus type="password" name="password" required
             />
         </div>
 

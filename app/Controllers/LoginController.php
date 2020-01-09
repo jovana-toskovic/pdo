@@ -6,6 +6,11 @@ use App\Controllers\Controller;
 
 class LoginController extends Controller
 {
+    public function __construct()
+    {
+        parent::__construct();
+
+    }
     public function showLoginForm($arg=[])
     {
         view('users.login.view');
@@ -13,22 +18,23 @@ class LoginController extends Controller
 
     public function login($arg)
     {
-
-        $users = $this->db->table(new User())
+        list($user) = $this->db->table(new User())
+            ->select(['*'])
             ->where(['email' => $arg['email']])
             ->get();
-        $user = $users[0];
 
         if(password_verify($arg['password'], $user->password)) {
-            $_SESSION['id'] = $user->id;
+            $this->session->startSession();
+            $this->session->setStoredValue(['id' => $user->id]);
             $this->redirect('home');
         }
     }
 
     public function logout()
     {
-
-        echo "logout";
+        $this->session->startSession();
+        $this->session->destroySession();
+        $this->redirect('login');
         
     }
 }

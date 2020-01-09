@@ -15,7 +15,7 @@
         </div>
 
         <?php
-        if(isset($_SESSION) && $_SESSION['id'] === $user->id) {
+        if(isset($_SESSION) && isset($_SESSION['id']) && $_SESSION['id'] === $user->id) {
             ?>
             <div class="flex">
                 <a href='<?php echo URL_PATH . "users/$user->id/edit" ?>' class="icon link-text text">

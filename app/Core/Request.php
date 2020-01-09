@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Core;
-use Exception;
 
 class Request
 {
@@ -9,13 +8,11 @@ class Request
 
     private function request($urlArray)
     {
-        // print_r($urlArray);
         $request = [];
         $action = array_key_exists(1, $urlArray) ? $urlArray[1] : 'index';
 
         if($this->requestType === 'GET') {
             if(array_key_exists(1, $urlArray) && is_numeric($urlArray[1])) {
-                // echo $urlArray[1];
                 $action = 'show';
                 $request = ['id' => $urlArray[1]];
                 $urlArray[1] = 'id';
@@ -67,10 +64,6 @@ class Request
         if (array_key_exists(2, $urlArray)){
             $path = "$urlArray[0]/$urlArray[1]/$urlArray[2]";
         }
-//
-//             echo $path;
-//             print_r($request);
-//             echo $action;
 
         return ['path' => $path, 'arguments' => $request, 'action'=>$action];
     }

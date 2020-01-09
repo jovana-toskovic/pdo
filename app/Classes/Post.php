@@ -7,7 +7,7 @@ class Post implements ModelInterface
 {
     public $id, $user_id;
     public $title, $body, $created_at, $username;
-    private $columnNames = Array("id", "title", "body", "published", "created_at", "user_id");
+    private $columnNames = Array("id", "title", "body", "published", "created_at", "user_id", 'posts.id');
     public $table = 'posts';
 
     public function __construct()

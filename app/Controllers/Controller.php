@@ -15,7 +15,7 @@ class Controller
     {
         if ($model !== null) $this->model = $model;
         $this->db = DB::return();
-        $this->session = new Session(['id' => '1']);
+        $this->session = new Session();
     }
 
     public function redirect($url)

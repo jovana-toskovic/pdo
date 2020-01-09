@@ -2,8 +2,7 @@
 
 namespace App\Classes\Validation;
 
-// ova klasa bi trebalo da se naznaci da je na menjena za validaciju Query Buildera
-class Validator
+class QueryBuilderValidator
 {
 
     private $errors = [];
@@ -16,12 +15,12 @@ class Validator
         }
     }
 
-//    private function isColumnValid($key, $model)
-//    {
-//        if (!in_array($key, $model->getColumnNames())) {
-//            $this->errors[] = "Invalid sql, $key does not exists in table.";
-//        }
-//    }
+    private function isColumnValid($key, $model)
+    {
+        if (!in_array($key, $model->getColumnNames())) {
+            $this->errors[] = "Invalid sql, $key does not exists in table.";
+        }
+    }
 
     private function isOperatorValid($value)
     {
@@ -35,10 +34,10 @@ class Validator
         if(!$this->isAssoc($data)) {
             $this->errors[] = "Invalid sql, wrong type of parameter sent, data must be of the type associative array.";
         }
-//        foreach ($data as $key=>$value) {
-//            $this->isValueValid($value, $key);
-//            $key !== "operator" ? $this->isColumnValid($key, $model) : $this->isOperatorValid($value);
-//        }
+        foreach ($data as $key=>$value) {
+            $this->isValueValid($value, $key);
+            $key !== "operator" ? $this->isColumnValid($key, $model) : $this->isOperatorValid($value);
+        }
     }
 
     public function getErrors()

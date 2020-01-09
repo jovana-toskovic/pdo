@@ -2,12 +2,11 @@
 
 namespace App\Classes;
 
-use App\Classes\DBConnection;
 use PDO;
 use PDOStatement;
 use Exception;
 use App\Contracts\ModelInterface;
-use App\Classes\Validation\Validator;
+use App\Classes\Validation\QueryBuilderValidator;
 
 class QueryBuilder
 {
@@ -26,9 +25,8 @@ class QueryBuilder
 
     private $secondModel = "";
     private $selected = "*";
-    private $what;
 
-    public function __construct($connection, Validator $validator)
+    public function __construct($connection, QueryBuilderValidator $validator)
     {
         $this->connection = $connection;
         $this->validator = $validator;
@@ -56,7 +54,6 @@ class QueryBuilder
         $this->model = "";
         $this->secondModel = "";
         $this->selected = "*";
-        $this->what;
     }
 
     //set fetch mode
@@ -87,8 +84,6 @@ class QueryBuilder
     public function join(ModelInterface $model, $secondModel, $what, $type = "inner"): self
     {
         $this->secondModel = $secondModel;
-        $this->what = $what;
-        //posts.user_id = users.id
         $joinType = strtoupper($type);
         $this->sql = " $joinType JOIN $this->secondModel ON $what = $secondModel.id";
         return $this->table($model);
@@ -127,7 +122,6 @@ class QueryBuilder
     // set condition
     public function where(array $where, string $logicalOperator=' &&'): self
     {
-        echo $this->sql;
         $operator = "=";
         if(!$this->isAssoc($where)){
             $operator =  $where[1];
@@ -147,9 +141,7 @@ class QueryBuilder
             $whereSql = ' WHERE ' . $whereSql;
         }
         $sql = $this->sql;
-
         $this->sql = $sql . $whereSql;
-        echo $this->sql;
         return $this;
     }
 
@@ -167,7 +159,6 @@ class QueryBuilder
             }
             die();
         }
-        echo $sql;
         $stmt = $this->connection->prepare($sql);
         $stmt->execute($array);
         return $stmt;
@@ -224,7 +215,6 @@ class QueryBuilder
             $columns[] = $column . " = ?";
         }
         $columns = $this->implodeArray($columns);
-        var_dump($columns);
         $this->values = array_merge($dataValues, $this->values);
 
         $sql = "UPDATE $this->table SET $columns $this->sql";
